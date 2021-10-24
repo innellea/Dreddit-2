@@ -11,6 +11,7 @@ import { buildSchema } from 'type-graphql';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 
 import redis from 'redis';
 import session from 'express-session';
@@ -50,11 +51,11 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({
-      em: orm.em,
-      req,
-      res,
-    }),
+    context: ({ req, res }) => ({ em: orm.em, req, res }),
+    plugins: [
+      ApolloServerPluginLandingPageGraphQLPlayground({
+        
+      }),
   });
 
   await apolloServer.start();
