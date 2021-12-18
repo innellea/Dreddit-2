@@ -12,7 +12,7 @@ import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
-
+import cors from 'cors';
 import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
@@ -21,11 +21,12 @@ import { MyContext } from './types';
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
   await orm.getMigrator().up();
-
   const app = express();
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
+  //TODO: Change cors policy to production
 
+  app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
   app.use(
     session({
       name: 'qid',
@@ -45,7 +46,7 @@ const main = async () => {
       resave: false,
     })
   );
-
+  //
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, PostResolver, UserResolver],
@@ -59,7 +60,7 @@ const main = async () => {
   await apolloServer.start();
   apolloServer.applyMiddleware({
     app,
-    cors: { credentials: true, origin: true },
+    cors: false,
   });
 
   app.listen(4000, () => {
