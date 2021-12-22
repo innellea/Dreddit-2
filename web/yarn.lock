@@ -2626,12 +2626,20 @@
     "@typescript-eslint/types" "4.33.0"
     "eslint-visitor-keys" "^2.0.0"
 
-"@urql/core@^2.3.2":
-  "integrity" "sha512-KXeR55ONqkTZ2gwNgyFGJEGRp1/jEnyqkFjEguknnG6GFaikAwAX0TMijKcX6ZQ4qE59cDtVEtSbqpVkd9XNmA=="
-  "resolved" "https://registry.npmjs.org/@urql/core/-/core-2.3.4.tgz"
-  "version" "2.3.4"
+"@urql/core@^2.3.6", "@urql/core@>=2.3.6":
+  "integrity" "sha512-PUxhtBh7/8167HJK6WqBv6Z0piuiaZHQGYbhwpNL9aIQmLROPEdaUYkY4wh45wPQXcTpnd11l0q3Pw+TI11pdw=="
+  "resolved" "https://registry.npmjs.org/@urql/core/-/core-2.3.6.tgz"
+  "version" "2.3.6"
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.0"
+    "wonka" "^4.0.14"
+
+"@urql/exchange-graphcache@^4.3.6":
+  "integrity" "sha512-RDEi1954lcnwBK2dwQGaxOInuebZrRliz2v7aAuQasj49N9bWYrlSkBfELG14EzOL7NI23IUaeLeaDN7MouDJg=="
+  "resolved" "https://registry.npmjs.org/@urql/exchange-graphcache/-/exchange-graphcache-4.3.6.tgz"
+  "version" "4.3.6"
+  dependencies:
+    "@urql/core" ">=2.3.6"
     "wonka" "^4.0.14"
 
 "@webassemblyjs/ast@1.11.1":
@@ -5371,10 +5379,10 @@
   "resolved" "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.5.4.tgz"
   "version" "5.5.4"
 
-"graphql@^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0", "graphql@^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0", "graphql@^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0", "graphql@^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0", "graphql@^14.0.0 || ^15.0.0 || ^16.0.0", "graphql@^15.0.0", "graphql@^15.4.0", "graphql@^15.7.1", "graphql@>=0.10.0", "graphql@>=0.11 <=16", "graphql@14.x || 15.x":
-  "integrity" "sha512-x34S6gC0/peBZnlK60zCJox/d45A7p6At9oN9EPA3qhoIAlR4LNZmXRLkICBckwwTMJzVdA8cx3QIQZMOl606A=="
-  "resolved" "https://registry.npmjs.org/graphql/-/graphql-15.7.1.tgz"
-  "version" "15.7.1"
+"graphql@^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0", "graphql@^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0", "graphql@^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0", "graphql@^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0", "graphql@^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0", "graphql@^14.0.0 || ^15.0.0 || ^16.0.0", "graphql@^15.0.0", "graphql@^15.4.0", "graphql@^15.8.0", "graphql@>=0.10.0", "graphql@>=0.11 <=16", "graphql@14.x || 15.x":
+  "integrity" "sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw=="
+  "resolved" "https://registry.npmjs.org/graphql/-/graphql-15.8.0.tgz"
+  "version" "15.8.0"
 
 "handlebars@^4.7.6":
   "integrity" "sha512-aAcXm5OAfE/8IXkcZvCepKU3VzW1/39Fb5ZuqMtgI/hT8X2YgoMvBY5dLhq/cpOvw7Lk1nK/UF71aLG/ZnVYRA=="
@@ -6768,6 +6776,13 @@
     "matcher" "^4.0.0"
     "minimist" "^1.2.5"
 
+"next-urql@^3.3.2":
+  "integrity" "sha512-oXQHCFU0R3pIwXWtDqZDYOjKcD7SlNP7aove9YuukgKuItdtIR9CRUgo3qMOD5dSQ3wBBGfQ8zR6XtzqV5WiGg=="
+  "resolved" "https://registry.npmjs.org/next-urql/-/next-urql-3.3.2.tgz"
+  "version" "3.3.2"
+  dependencies:
+    "react-ssr-prepass" "^1.4.0"
+
 "next@*", "next@^12.0.7", "next@^8.1.1-canary.54 || >=9.0.0", "next@>=10.2.0", "next@>=9.0.0":
   "integrity" "sha512-sKO8GJJYfuk9c+q+zHSNumvff+wP7ufmOlwT6BuzwiYfFJ61VTTkfTcDLSJ+95ErQJiC54uS4Yg5JEE8H6jXRA=="
   "resolved" "https://registry.npmjs.org/next/-/next-12.0.7.tgz"
@@ -7557,12 +7572,17 @@
   "resolved" "https://registry.npmjs.org/react-icons/-/react-icons-4.3.1.tgz"
   "version" "4.3.1"
 
-"react-is@^16.7.0", "react-is@^16.8.1":
+"react-is@^16.7.0":
   "integrity" "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
   "version" "16.13.1"
 
-"react-is@17.0.2":
+"react-is@^16.8.1":
+  "integrity" "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="
+  "resolved" "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
+  "version" "16.13.1"
+
+"react-is@^17.0.2", "react-is@17.0.2":
   "integrity" "sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w=="
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   "version" "17.0.2"
@@ -7590,6 +7610,11 @@
     "tslib" "^1.0.0"
     "use-callback-ref" "^1.2.3"
     "use-sidecar" "^1.0.1"
+
+"react-ssr-prepass@^1.4.0":
+  "integrity" "sha512-0SzdmiQUtHvhxCabHg9BI/pkJfijGkQ0jQL6fC4YFy7idaDOuaiQLsajIkkNxffFXtJFHIWFITlve2WB88e0Jw=="
+  "resolved" "https://registry.npmjs.org/react-ssr-prepass/-/react-ssr-prepass-1.4.0.tgz"
+  "version" "1.4.0"
 
 "react-style-singleton@^2.1.0":
   "integrity" "sha512-jNRp07Jza6CBqdRKNgGhT3u9umWvils1xsuMOjZlghBDH2MU0PL2WZor4PGYjXpnRCa9DQSlHMs/xnABWOwYbA=="
@@ -9085,12 +9110,12 @@
   dependencies:
     "prepend-http" "^2.0.0"
 
-"urql@^2.0.5":
-  "integrity" "sha512-UOl37CkNO1sfhw8jPihq+9NKUpTLnsRjpK7vmOVqPceqSO0rYXHOAEJp2TWDhyLjn2lYDlDlAfDaxNyK5m1FOA=="
-  "resolved" "https://registry.npmjs.org/urql/-/urql-2.0.5.tgz"
-  "version" "2.0.5"
+"urql@^2.0.0", "urql@^2.0.6":
+  "integrity" "sha512-ovK9mx7YxD/CKUwVZGbEDBzZjbCcNsr1990nIhDCKe3Ij/0gNcIa+0EIyXKceOPuYDYKavIoaNQV2kOZjQxFcw=="
+  "resolved" "https://registry.npmjs.org/urql/-/urql-2.0.6.tgz"
+  "version" "2.0.6"
   dependencies:
-    "@urql/core" "^2.3.2"
+    "@urql/core" "^2.3.6"
     "wonka" "^4.0.14"
 
 "use-callback-ref@^1.2.1", "use-callback-ref@^1.2.3":

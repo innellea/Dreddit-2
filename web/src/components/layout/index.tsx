@@ -1,5 +1,7 @@
 import { Box } from "@chakra-ui/react";
+import { withUrqlClient } from "next-urql";
 import { ReactNode } from "react";
+import { createUrqlClient } from "utils/createUrqlClient";
 
 import Footer from "./Footer";
 import { Header } from "./Header";
@@ -22,4 +24,4 @@ const Layout = ({ children }: LayoutProps) => {
   );
 };
 
-export default Layout;
+export default withUrqlClient(createUrqlClient)(Layout);

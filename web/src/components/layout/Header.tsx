@@ -1,13 +1,18 @@
 import { Box, Button, Flex, Heading } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/react";
-import { useMeQuery } from "generated/graphql";
+import { useLogoutMutation, useMeQuery } from "generated/graphql";
 import NextLink from "next/link";
+import { isServer } from "utils/isServer";
 import ThemeToggle from "./ThemeToggle";
 
 interface HeaderProps {}
 export const Header: React.FC<HeaderProps> = ({}) => {
-  const [{ data, fetching }] = useMeQuery();
+  const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
+  const [{ data, fetching }] = useMeQuery({
+    pause: isServer(),
+  });
   let body = null;
+  console.log(data?.me?.username);
   // data is loading
   if (fetching) {
     // user not logged in
@@ -26,23 +31,31 @@ export const Header: React.FC<HeaderProps> = ({}) => {
   // user logged in
   else {
     body = (
-      <Flex>
+      <>
         <Box>Hello, {data.me.username}</Box>
-        <Button ml={3} variant="link">
+        <Button
+          onClick={() => {
+            logout();
+          }}
+          isLoading={logoutFetching}
+          ml={3}
+          variant="link"
+        >
           Logout
         </Button>
-      </Flex>
+      </>
     );
   }
   return (
     <Flex as="header" width="full" align="center">
+      <Box>
+        <ThemeToggle />
+      </Box>
       <Heading as="h1" size="md">
         <Link href="/">Dreddit</Link>
       </Heading>
-      <Box>{body}</Box>
-      <Box marginLeft="auto">
-        <ThemeToggle />
-      </Box>
+
+      <Box marginLeft="auto">{body}</Box>
     </Flex>
   );
 };
