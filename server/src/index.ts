@@ -17,8 +17,9 @@ import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import { MyContext } from './types';
-
+import sendEmail from './utils/sendEmails';
 const main = async () => {
+  sendEmail('bob@bob.com', 'hello there');
   const orm = await MikroORM.init(microConfig);
   await orm.getMigrator().up();
   const app = express();
