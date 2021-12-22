@@ -22,7 +22,7 @@ export class PostResolver {
   posts(@Ctx() ctx: MyContext): Promise<Post[]> {
     return ctx.em.find(Post, {});
   }
-
+  //
   @Query(() => Post, { nullable: true })
   post(
     @Arg('id', () => Int) id: number,

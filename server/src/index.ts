@@ -57,6 +57,7 @@ const main = async () => {
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground({})],
   });
 
+  //
   await apolloServer.start();
   apolloServer.applyMiddleware({
     app,
