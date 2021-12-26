@@ -1,7 +1,7 @@
-import { Box, Button, Code, Flex, Image, Link } from "@chakra-ui/react";
-import { AiFillGithub } from "react-icons/ai";
+import { Box, Button, Code, Flex, Image, Link } from '@chakra-ui/react';
+import { AiFillGithub } from 'react-icons/ai';
 
-const repoLink = "https://github.com/sozonome/nextarter-chakra";
+const repoLink = 'https://github.com/sozonome/nextarter-chakra';
 
 const CTASection = () => {
   return (
@@ -28,7 +28,7 @@ const CTASection = () => {
       </Flex>
 
       <Box marginY={2}>
-        <Code>npx degit sozonome/nextarter-chakra {"<YOUR_APP_NAME>"}</Code>
+        <Code>npx degit sozonome/nextarter-chakra {'<YOUR_APP_NAME>'}</Code>
         <br />
 
         <Button

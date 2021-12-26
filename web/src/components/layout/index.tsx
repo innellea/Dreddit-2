@@ -1,14 +1,14 @@
-import { Box } from "@chakra-ui/react";
-import { withUrqlClient } from "next-urql";
-import { ReactNode } from "react";
-import { createUrqlClient } from "utils/createUrqlClient";
+import { Box } from '@chakra-ui/react';
+import { withUrqlClient } from 'next-urql';
+import { ReactNode } from 'react';
+import { createUrqlClient } from 'utils/createUrqlClient';
 
-import Footer from "./Footer";
-import { Header } from "./Header";
+import Footer from './Footer';
+import { Header } from './Header';
 
-type LayoutProps = {
+interface LayoutProps {
   children: ReactNode;
-};
+}
 
 const Layout = ({ children }: LayoutProps) => {
   return (

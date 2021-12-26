@@ -35,8 +35,8 @@ class UserResponse {
 export class UserResolver {
   @Mutation(() => Boolean)
   async forgotPassword(
-    @Arg('email') email: string,
-    @Ctx() { em, redis }: MyContext
+  @Arg('email') email: string,
+    @Ctx() { em, redis }: MyContext,
   ) {
     const user = await em.findOne(User, { email });
     if (!user) {
@@ -50,12 +50,12 @@ export class UserResolver {
       FORGET_PASSWORD_PREFIX + token,
       user.id,
       'ex',
-      1000 * 60 * 60 * 24 * 3
+      1000 * 60 * 60 * 24 * 3,
     ); // 3 days
 
     await sendEmail(
       email,
-      `<a href="http://localhost:3000/change-password/${token}">reset password</a>`
+      `<a href="http://localhost:3000/change-password/${token}">reset password</a>`,
     );
 
     return true;
@@ -73,7 +73,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
-    @Ctx() { em, req }: MyContext
+      @Ctx() { em, req }: MyContext,
   ): Promise<UserResponse> {
     const errors = validateRegister(options);
     if (errors) {
@@ -95,7 +95,7 @@ export class UserResolver {
         .returning('*');
       user = result[0];
     } catch (err) {
-      //|| err.detail.includes("already exists")) {
+      // || err.detail.includes("already exists")) {
       // duplicate username error
       if (err.code === '23505') {
         return {
@@ -117,14 +117,14 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg('usernameOrEmail') usernameOrEmail: string,
-    @Arg('password') password: string,
-    @Ctx() { em, req }: MyContext
+      @Arg('password') password: string,
+      @Ctx() { em, req }: MyContext,
   ): Promise<UserResponse> {
     const user = await em.findOne(
       User,
       usernameOrEmail.includes('@')
         ? { email: usernameOrEmail }
-        : { username: usernameOrEmail }
+        : { username: usernameOrEmail },
     );
     if (!user) {
       return {
@@ -163,7 +163,6 @@ export class UserResolver {
           return;
         }
         resolve(true);
-      })
-    );
+      }));
   }
 }

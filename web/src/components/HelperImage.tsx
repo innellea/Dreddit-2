@@ -1,10 +1,10 @@
-import { Box, Tooltip } from "@chakra-ui/react";
-import Image from "next/image";
+import { Box, Tooltip } from '@chakra-ui/react';
+import Image from 'next/image';
 
-type HelperImageProps = {
+interface HelperImageProps {
   label?: string;
   src: string;
-};
+}
 
 const HelperImage = ({ label, src }: HelperImageProps) => {
   return (
@@ -17,7 +17,7 @@ const HelperImage = ({ label, src }: HelperImageProps) => {
 };
 
 HelperImage.defaultProps = {
-  label: "",
+  label: '',
 };
 
 export default HelperImage;

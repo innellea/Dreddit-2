@@ -6,10 +6,10 @@ import {
   Text,
   Link as ChakraLink,
   useColorMode,
-} from "@chakra-ui/react";
-import Link from "next/link";
+} from '@chakra-ui/react';
+import Link from 'next/link';
 
-import MotionBox from "components/motion/Box";
+import MotionBox from 'components/motion/Box';
 
 const Page404 = () => {
   const { colorMode } = useColorMode();
@@ -18,8 +18,8 @@ const Page404 = () => {
     <>
       <MotionBox
         animate={{ y: 20 }}
-        transition={{ repeat: Infinity, duration: 2, repeatType: "reverse" }}
-        width={["100%", "70%", "60%", "60%"]}
+        transition={{ repeat: Infinity, duration: 2, repeatType: 'reverse' }}
+        width={['100%', '70%', '60%', '60%']}
         margin="0 auto"
       >
         <Image
@@ -40,7 +40,7 @@ const Page404 = () => {
           <Text>It&apos;s Okay!</Text>
           <Link href="/" passHref>
             <Button
-              backgroundColor={colorMode === "light" ? "gray.300" : "teal.500"}
+              backgroundColor={colorMode === 'light' ? 'gray.300' : 'teal.500'}
             >
               Let&apos;s Head Back
             </Button>

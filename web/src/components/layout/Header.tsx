@@ -1,9 +1,8 @@
-import { Box, Button, Flex, Heading } from "@chakra-ui/react";
-import { Link } from "@chakra-ui/react";
-import { useLogoutMutation, useMeQuery } from "generated/graphql";
-import NextLink from "next/link";
-import { isServer } from "utils/isServer";
-import ThemeToggle from "./ThemeToggle";
+import { Box, Button, Flex, Heading, Link } from '@chakra-ui/react';
+import { useLogoutMutation, useMeQuery } from 'generated/graphql';
+import NextLink from 'next/link';
+import { isServer } from 'utils/isServer';
+import ThemeToggle from './ThemeToggle';
 
 interface HeaderProps {}
 export const Header: React.FC<HeaderProps> = ({}) => {

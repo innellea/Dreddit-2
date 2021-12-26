@@ -4,13 +4,14 @@ import {
   MeDocument,
   LoginMutation,
   RegisterMutation,
-} from "generated/graphql";
-import { dedupExchange, fetchExchange } from "urql";
-import { cacheExchange } from "@urql/exchange-graphcache";
-import { betterUpdateQuery } from "./betterUpdateQuery";
+} from 'generated/graphql';
+import { dedupExchange, fetchExchange } from 'urql';
+import { cacheExchange } from '@urql/exchange-graphcache';
+import { betterUpdateQuery } from './betterUpdateQuery';
+
 export const createUrqlClient = (ssrExchange: any) => ({
-  url: "http://localhost:4000/graphql",
-  fetchOptions: { credentials: "include" as const },
+  url: 'https://localhost:4000/graphql',
+  fetchOptions: { credentials: 'include' as const },
   exchanges: [
     dedupExchange,
     cacheExchange({
@@ -22,7 +23,7 @@ export const createUrqlClient = (ssrExchange: any) => ({
               cache,
               { query: MeDocument },
               _result,
-              () => ({ me: null })
+              () => ({ me: null }),
             );
           },
           login: (_result, args, cache, info) => {
@@ -38,7 +39,7 @@ export const createUrqlClient = (ssrExchange: any) => ({
                     me: result.login.user,
                   };
                 }
-              }
+              },
             );
           },
           register: (_result, args, cache, info) => {
@@ -54,7 +55,7 @@ export const createUrqlClient = (ssrExchange: any) => ({
                     me: result.register.user,
                   };
                 }
-              }
+              },
             );
           },
         },
