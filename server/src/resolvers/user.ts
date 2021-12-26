@@ -11,11 +11,11 @@ import { MyContext } from '../types';
 import { User } from '../entities/User';
 import argon2 from 'argon2';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { COOKIE_NAME } from '../constants';
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../constants';
 import { UsernamePasswordInput } from './UsernamePasswordInput';
 import { validateRegister } from '../utils/validateRegister';
 import sendEmail from '../utils/sendEmails';
-
+import { v4 } from 'uuid';
 @ObjectType()
 class FieldError {
   @Field()
@@ -36,14 +36,24 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Mutation(() => Boolean)
-  async forgotPassword(@Arg('email') email: string, @Ctx() { em }: MyContext) {
+  async forgotPassword(
+    @Arg('email') email: string,
+    @Ctx() { em, redis }: MyContext
+  ) {
     const user = await em.findOne(User, { email });
     if (!user) {
       // the email is not in the database
       return false;
     }
 
-    const token = 'asd21ed';
+    const token = v4();
+
+    await redis.set(
+      FORGET_PASSWORD_PREFIX + token,
+      user.id,
+      'ex',
+      1000 * 60 * 60 * 24 * 3
+    );
     await sendEmail(
       email,
       `<a href="http://localhost:3000/change-password/${token}">reset password</a>`
