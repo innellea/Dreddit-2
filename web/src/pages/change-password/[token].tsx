@@ -1,20 +1,21 @@
-import { Box, Button } from "@chakra-ui/react";
-import { InputField } from "components/InputField";
-import { Wrapper } from "components/Wrapper";
-import { Formik, Form } from "formik";
-import { NextPage } from "next";
-import router from "next/router";
-import login from "pages/login";
-import React from "react";
-import { toErrorMap } from "utils/toErrorMap";
+import { Box, Button } from '@chakra-ui/react';
+import { InputField } from 'components/InputField';
+import { Wrapper } from 'components/Wrapper';
+import { Formik, Form } from 'formik';
+import { NextPage } from 'next';
+import router from 'next/router';
+import login from 'pages/login';
+import React from 'react';
+import { toErrorMap } from 'utils/toErrorMap';
 
 interface Props {}
 
 const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
+  // const [,] = useChangePasswordMutation();
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{ newPassword: "" }}
+        initialValues={{ newPassword: '' }}
         onSubmit={async (values, { setErrors }) => {
           // const response = await login(values);
           // console.log(response);

@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 
-import { MikroORM, ServerException } from '@mikro-orm/core';
-import { Migration } from '@mikro-orm/migrations';
+import { MikroORM } from '@mikro-orm/core';
 import { COOKIE_NAME, __prod__ } from './constants';
 import { Post } from './entities/Post';
 import microConfig from './mikro-orm.config';
@@ -16,7 +15,6 @@ import cors from 'cors';
 import Redis from 'ioredis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
-import { MyContext } from './types';
 import sendEmail from './utils/sendEmails';
 
 const main = async () => {
@@ -28,9 +26,9 @@ const main = async () => {
   const RedisStore = connectRedis(session);
 
   const redis = new Redis();
-  //TODO: Change cors policy to production
+  // TODO: Change cors policy to production
 
-  app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+  app.use(cors({ origin: 'https://localhost:3000', credentials: true }));
   app.use(
     session({
       name: COOKIE_NAME,
@@ -48,7 +46,7 @@ const main = async () => {
       saveUninitialized: false,
       secret: 'secret',
       resave: false,
-    })
+    }),
   );
   //
   const apolloServer = new ApolloServer({
@@ -68,9 +66,7 @@ const main = async () => {
     cors: false,
   });
 
-  app.listen(4000, () => {
-    console.log('listening on 4000');
-  });
+  app.listen(4000, () => {});
 };
 main().catch((err) => {
   console.error(err);

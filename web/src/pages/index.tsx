@@ -1,11 +1,11 @@
-import { Box } from "@chakra-ui/react";
+import { Box } from '@chakra-ui/react';
 
-import CTASection from "components/CTASection";
-import SomeImage from "components/SomeImage";
-import SomeText from "components/SomeText";
-import { usePostsQuery } from "generated/graphql";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "utils/createUrqlClient";
+import CTASection from 'components/CTASection';
+import SomeImage from 'components/SomeImage';
+import SomeText from 'components/SomeText';
+import { usePostsQuery } from 'generated/graphql';
+import { withUrqlClient } from 'next-urql';
+import { createUrqlClient } from 'utils/createUrqlClient';
 
 const Home = () => {
   const [{ data }] = usePostsQuery();
