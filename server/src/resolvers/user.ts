@@ -16,6 +16,7 @@ import { UsernamePasswordInput } from './UsernamePasswordInput';
 import { validateRegister } from '../utils/validateRegister';
 import sendEmail from '../utils/sendEmails';
 import { v4 } from 'uuid';
+
 @ObjectType()
 class FieldError {
   @Field()
@@ -23,16 +24,13 @@ class FieldError {
   @Field()
   message: string;
 }
-
 @ObjectType()
 class UserResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
-
   @Field(() => User, { nullable: true })
   user?: User;
 }
-
 @Resolver()
 export class UserResolver {
   @Mutation(() => Boolean)
@@ -42,8 +40,8 @@ export class UserResolver {
   ) {
     const user = await em.findOne(User, { email });
     if (!user) {
-      // the email is not in the database
-      return false;
+      // the email is not in the db
+      return true;
     }
 
     const token = v4();
@@ -53,11 +51,13 @@ export class UserResolver {
       user.id,
       'ex',
       1000 * 60 * 60 * 24 * 3
-    );
+    ); // 3 days
+
     await sendEmail(
       email,
       `<a href="http://localhost:3000/change-password/${token}">reset password</a>`
     );
+
     return true;
   }
 
@@ -67,11 +67,9 @@ export class UserResolver {
     if (!req.session.userId) {
       return null;
     }
-
     const user = await em.findOne(User, { id: req.session.userId });
     return user;
   }
-
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
@@ -81,7 +79,6 @@ export class UserResolver {
     if (errors) {
       return { errors };
     }
-
     const hashedPassword = await argon2.hash(options.password);
     let user;
     try {
@@ -90,8 +87,8 @@ export class UserResolver {
         .getKnexQuery()
         .insert({
           username: options.username,
-          password: hashedPassword,
           email: options.email,
+          password: hashedPassword,
           created_at: new Date(),
           updated_at: new Date(),
         })
@@ -111,15 +108,12 @@ export class UserResolver {
         };
       }
     }
-
     // store user id session
     // this will set a cookie on the user
     // keep them logged in
     req.session.userId = user.id;
-
     return { user };
   }
-
   @Mutation(() => UserResponse)
   async login(
     @Arg('usernameOrEmail') usernameOrEmail: string,
@@ -153,14 +147,11 @@ export class UserResolver {
         ],
       };
     }
-
     req.session.userId = user.id;
-
     return {
       user,
     };
   }
-
   @Mutation(() => Boolean)
   logout(@Ctx() { req, res }: MyContext) {
     return new Promise((resolve) =>
