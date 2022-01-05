@@ -13,7 +13,7 @@ import { createUrqlClient } from "utils/createUrqlClient";
 const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
   const router = useRouter();
   const [, changePassword] = useChangePasswordMutation();
-  const [tokenError, setTokenError] = useState("");
+  const [tokenError, setTokenError] = useState('');
   return (
     <Wrapper variant="small">
       <Formik
@@ -45,14 +45,14 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
               type="password"
             />
             {tokenError ? (
-              <>
+              <Flex>
                 <Box mr={2} style={{ color: "red" }}>
                   {tokenError}
                 </Box>
                 <NextLink href="/forgot-password">
-                  <Link>click here to get a new one</Link>
+                  <Link color={"Highlight"}>get a new one</Link>
                 </NextLink>
-              </>
+              </Flex>
             ) : null}
 
             <Button

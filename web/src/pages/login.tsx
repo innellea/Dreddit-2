@@ -1,16 +1,15 @@
 import React, { ReactElement } from "react";
 import { Formik, Form, Field } from "formik";
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Flex, Link } from "@chakra-ui/react";
 import { Wrapper } from "components/Wrapper";
 import { InputField } from "components/InputField";
 import { useMutation } from "urql";
 import { useLoginMutation } from "generated/graphql";
 import { toErrorMap } from "utils/toErrorMap";
-
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "utils/createUrqlClient";
-
 const Login: React.FC<{}> = ({}) => {
   //! TODO: add validation
   const router = useRouter();
@@ -46,6 +45,14 @@ const Login: React.FC<{}> = ({}) => {
                 type="password"
                 autoComplete="current-password"
               />
+            </Box>
+
+            <Box>
+              <Flex mt={2}>
+                <NextLink href="/forgot-password">
+                  <Link ml="auto"> Forgot Password </Link>
+                </NextLink>
+              </Flex>
             </Box>
 
             <Button
