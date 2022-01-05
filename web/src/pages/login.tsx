@@ -1,15 +1,15 @@
-import React, { ReactElement } from 'react';
-import { Formik, Form, Field } from 'formik';
-import { Box, Button } from '@chakra-ui/react';
-import { Wrapper } from 'components/Wrapper';
-import { InputField } from 'components/InputField';
-import { useMutation } from 'urql';
-import { useLoginMutation } from 'generated/graphql';
-import { toErrorMap } from 'utils/toErrorMap';
+import React, { ReactElement } from "react";
+import { Formik, Form, Field } from "formik";
+import { Box, Button } from "@chakra-ui/react";
+import { Wrapper } from "components/Wrapper";
+import { InputField } from "components/InputField";
+import { useMutation } from "urql";
+import { useLoginMutation } from "generated/graphql";
+import { toErrorMap } from "utils/toErrorMap";
 
-import { useRouter } from 'next/router';
-import { withUrqlClient } from 'next-urql';
-import { createUrqlClient } from 'utils/createUrqlClient';
+import { useRouter } from "next/router";
+import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "utils/createUrqlClient";
 
 const Login: React.FC<{}> = ({}) => {
   //! TODO: add validation
@@ -18,7 +18,7 @@ const Login: React.FC<{}> = ({}) => {
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{ usernameOrEmail: '', password: '' }}
+        initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
           const response = await login(values);
           console.log(response);
@@ -26,7 +26,7 @@ const Login: React.FC<{}> = ({}) => {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
             // worked
-            router.push('/');
+            router.push("/");
           }
         }}
       >
