@@ -1,3 +1,5 @@
+import { EntityManager } from "@mikro-orm/postgresql";
+
 import {
   Resolver,
   Mutation,
@@ -6,22 +8,31 @@ import {
   Ctx,
   ObjectType,
   Query,
-} from 'type-graphql';
-import { MyContext } from '../types';
-import { User } from '../entities/User';
-import argon2 from 'argon2';
-import { EntityManager } from '@mikro-orm/postgresql';
-import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../constants';
-import { UsernamePasswordInput } from './UsernamePasswordInput';
-import { validateRegister } from '../utils/validateRegister';
-import sendEmail from '../utils/sendEmails';
-import { v4 } from 'uuid';
+} from "type-graphql";
+
+import argon2 from "argon2";
+
+import { v4 } from "uuid";
+
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
+import { MyContext } from "../types";
+import { User } from "../entities/User";
+import sendEmail  from "../utils/sendEmails";
+import { validateRegister } from "../utils/validateRegister";
+
+import { UsernamePasswordInput } from "./UsernamePasswordInput";
+
+// TODO 
+// MOVE REDIS TO types.ts 
+// weird issue, not sure why
+const Redis = require("ioredis");
+const redis = new Redis();
 @ObjectType()
 class FieldError {
   @Field()
-  field!: string;
+  field: string;
   @Field()
-  message!: string;
+  message: string;
 }
 @ObjectType()
 class UserResponse {
@@ -35,29 +46,29 @@ class UserResponse {
 export class UserResolver {
   @Mutation(() => UserResponse)
   async changePassword(
-    @Arg('token') token: string,
-    @Arg('newPassword') newPassword: string,
-    @Ctx() { redis, em, req }: MyContext
+    @Arg("token") token: string,
+    @Arg("newPassword") newPassword: string,
+    @Ctx() {  em, req }: MyContext
   ): Promise<UserResponse> {
     if (newPassword.length <= 2) {
       return {
         errors: [
           {
-            field: 'newPassword',
-            message: 'length must be greater than 2',
+            field: "newPassword",
+            message: "length must be greater than 2",
           },
         ],
       };
     }
-
+ 
     const key = FORGET_PASSWORD_PREFIX + token;
     const userId = await redis.get(key);
     if (!userId) {
       return {
         errors: [
           {
-            field: 'token',
-            message: 'token expired',
+            field: "token",
+            message: "token expired",
           },
         ],
       };
@@ -69,8 +80,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: 'token',
-            message: 'user no longer exists',
+            field: "token",
+            message: "user no longer exists",
           },
         ],
       };
@@ -89,8 +100,8 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   async forgotPassword(
-    @Arg('email') email: string,
-    @Ctx() { em, redis }: MyContext
+    @Arg("email") email: string,
+    @Ctx() { em }: MyContext
   ) {
     const user = await em.findOne(User, { email });
     if (!user) {
@@ -101,7 +112,7 @@ export class UserResolver {
     await redis.set(
       FORGET_PASSWORD_PREFIX + token,
       user.id,
-      'ex',
+      "ex",
       1000 * 60 * 60 * 24 * 3
     ); // 3 days
     await sendEmail(
@@ -121,7 +132,7 @@ export class UserResolver {
   }
   @Mutation(() => UserResponse)
   async register(
-    @Arg('options') options: UsernamePasswordInput,
+    @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const errors = validateRegister(options);
@@ -141,17 +152,17 @@ export class UserResolver {
           created_at: new Date(),
           updated_at: new Date(),
         })
-        .returning('*');
+        .returning("*");
       user = result[0];
     } catch (err) {
       //|| err.detail.includes("already exists")) {
       // duplicate username error
-      if (err.code === '23505') {
+      if (err.code === "23505") {
         return {
           errors: [
             {
-              field: 'username',
-              message: 'username already taken',
+              field: "username",
+              message: "username already taken",
             },
           ],
         };
@@ -165,13 +176,13 @@ export class UserResolver {
   }
   @Mutation(() => UserResponse)
   async login(
-    @Arg('usernameOrEmail') usernameOrEmail: string,
-    @Arg('password') password: string,
+    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("password") password: string,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const user = await em.findOne(
       User,
-      usernameOrEmail.includes('@')
+      usernameOrEmail.includes("@")
         ? { email: usernameOrEmail }
         : { username: usernameOrEmail }
     );
@@ -179,7 +190,7 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: 'usernameOrEmail',
+            field: "usernameOrEmail",
             message: "that username doesn't exist",
           },
         ],
@@ -190,8 +201,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: 'password',
-            message: 'incorrect password',
+            field: "password",
+            message: "incorrect password",
           },
         ],
       };
