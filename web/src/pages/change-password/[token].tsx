@@ -10,10 +10,11 @@ import { toErrorMap } from "utils/toErrorMap";
 import NextLink from "next/link";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "utils/createUrqlClient";
+
 const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
   const router = useRouter();
   const [, changePassword] = useChangePasswordMutation();
-  const [tokenError, setTokenError] = useState('');
+  const [tokenError, setTokenError] = useState("");
   return (
     <Wrapper variant="small">
       <Formik
