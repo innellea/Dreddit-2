@@ -67,7 +67,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@ava/typescript": "^2.0.0",
+    "@ava/typescript": "^3.0.0",
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/connect-redis": "^0.0.18",
     "@types/cors": "^2.8.12",
