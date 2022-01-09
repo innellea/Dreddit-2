@@ -11,7 +11,6 @@
   "scripts": {
     "dev": "nodemon build/main/index.js",
     "build": "run-p build:*",
-    "create:migration": "mikro-orm migration:create",
     "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
     "fix": "run-s fix:*",
@@ -45,15 +44,12 @@
   },
   "dependencies": {
     "@bitauth/libauth": "^1.18.1",
-    "@mikro-orm/cli": "^4.4.3",
-    "@mikro-orm/core": "^4.5.9",
-    "@mikro-orm/migrations": "^4.4.3",
-    "@mikro-orm/postgresql": "^4.5.9",
     "apollo-server-core": "^3.5.0",
     "apollo-server-express": "^3.4.0",
     "argon2": "^0.28.3",
     "connect-redis": "^6.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "graphql": "^15.7.1",
@@ -63,7 +59,7 @@
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
-    "typeorm": "^0.2.38",
+    "typeorm": "^0.2.41",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

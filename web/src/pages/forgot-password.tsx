@@ -2,7 +2,6 @@ import { Box, Button } from "@chakra-ui/react";
 import { InputField } from "components/InputField";
 import { Wrapper } from "components/Wrapper";
 import { Formik, Form } from "formik";
-
 import { useForgotPasswordMutation } from "generated/graphql";
 import { useState } from "react";
 const ForgotPassword: React.FC<{}> = ({}) => {

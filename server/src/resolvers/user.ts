@@ -1,5 +1,3 @@
-import { EntityManager } from "@mikro-orm/postgresql";
-
 import {
   Resolver,
   Mutation,
@@ -8,24 +6,26 @@ import {
   Ctx,
   ObjectType,
   Query,
-} from "type-graphql";
+} from 'type-graphql';
 
-import argon2 from "argon2";
+import argon2 from 'argon2';
 
-import { v4 } from "uuid";
+import { v4 } from 'uuid';
 
-import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
-import { MyContext } from "../types";
-import { User } from "../entities/User";
-import sendEmail  from "../utils/sendEmails";
-import { validateRegister } from "../utils/validateRegister";
+import { getConnection } from 'typeorm';
 
-import { UsernamePasswordInput } from "./UsernamePasswordInput";
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../constants';
+import { MyContext } from '../types';
+import { User } from '../entities/User';
+import sendEmail from '../utils/sendEmails';
+import { validateRegister } from '../utils/validateRegister';
 
-// TODO 
-// MOVE REDIS TO types.ts 
+import { UsernamePasswordInput } from './UsernamePasswordInput';
+
+// TODO
+// MOVE REDIS TO types.ts
 // weird issue, not sure why
-const Redis = require("ioredis");
+const Redis = require('ioredis');
 const redis = new Redis();
 @ObjectType()
 class FieldError {
@@ -46,49 +46,53 @@ class UserResponse {
 export class UserResolver {
   @Mutation(() => UserResponse)
   async changePassword(
-    @Arg("token") token: string,
-    @Arg("newPassword") newPassword: string,
-    @Ctx() {  em, req }: MyContext
+    @Arg('token') token: string,
+    @Arg('newPassword') newPassword: string,
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     if (newPassword.length <= 2) {
       return {
         errors: [
           {
-            field: "newPassword",
-            message: "length must be greater than 2",
+            field: 'newPassword',
+            message: 'length must be greater than 2',
           },
         ],
       };
     }
- 
+
     const key = FORGET_PASSWORD_PREFIX + token;
     const userId = await redis.get(key);
     if (!userId) {
       return {
         errors: [
           {
-            field: "token",
-            message: "token expired",
+            field: 'token',
+            message: 'token expired',
           },
         ],
       };
     }
-
-    const user = await em.findOne(User, { id: parseInt(userId) });
+    const userIdNum = parseInt(userId);
+    const user = await User.findOne(userIdNum);
 
     if (!user) {
       return {
         errors: [
           {
-            field: "token",
-            message: "user no longer exists",
+            field: 'token',
+            message: 'user no longer exists',
           },
         ],
       };
     }
 
-    user.password = await argon2.hash(newPassword);
-    await em.persistAndFlush(user);
+    await User.update(
+      { id: userIdNum },
+      {
+        password: await argon2.hash(newPassword),
+      }
+    );
 
     await redis.del(key);
 
@@ -99,11 +103,8 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async forgotPassword(
-    @Arg("email") email: string,
-    @Ctx() { em }: MyContext
-  ) {
-    const user = await em.findOne(User, { email });
+  async forgotPassword(@Arg('email') email: string, @Ctx() {}: MyContext) {
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       // the email is not in the db
       return true;
@@ -112,7 +113,7 @@ export class UserResolver {
     await redis.set(
       FORGET_PASSWORD_PREFIX + token,
       user.id,
-      "ex",
+      'ex',
       1000 * 60 * 60 * 24 * 3
     ); // 3 days
     await sendEmail(
@@ -122,18 +123,17 @@ export class UserResolver {
     return true;
   }
   @Query(() => User, { nullable: true })
-  async me(@Ctx() { req, em }: MyContext) {
+  me(@Ctx() { req }: MyContext) {
     // you are not logged in
     if (!req.session.userId) {
       return null;
     }
-    const user = await em.findOne(User, { id: req.session.userId });
-    return user;
+    return User.findOne(req.session.userId);
   }
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em, req }: MyContext
+    @Arg('options') options: UsernamePasswordInput,
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const errors = validateRegister(options);
     if (errors) {
@@ -142,27 +142,27 @@ export class UserResolver {
     const hashedPassword = await argon2.hash(options.password);
     let user;
     try {
-      const result = await (em as EntityManager)
-        .createQueryBuilder(User)
-        .getKnexQuery()
-        .insert({
+      const result = await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(User)
+        .values({
           username: options.username,
           email: options.email,
           password: hashedPassword,
-          created_at: new Date(),
-          updated_at: new Date(),
         })
-        .returning("*");
-      user = result[0];
+        .returning('*')
+        .execute();
+      user = result.raw[0];
     } catch (err) {
       //|| err.detail.includes("already exists")) {
       // duplicate username error
-      if (err.code === "23505") {
+      if (err.code === '23505') {
         return {
           errors: [
             {
-              field: "username",
-              message: "username already taken",
+              field: 'username',
+              message: 'username already taken',
             },
           ],
         };
@@ -176,21 +176,20 @@ export class UserResolver {
   }
   @Mutation(() => UserResponse)
   async login(
-    @Arg("usernameOrEmail") usernameOrEmail: string,
-    @Arg("password") password: string,
-    @Ctx() { em, req }: MyContext
+    @Arg('usernameOrEmail') usernameOrEmail: string,
+    @Arg('password') password: string,
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(
-      User,
-      usernameOrEmail.includes("@")
-        ? { email: usernameOrEmail }
-        : { username: usernameOrEmail }
+    const user = await User.findOne(
+      usernameOrEmail.includes('@')
+        ? { where: { email: usernameOrEmail } }
+        : { where: { username: usernameOrEmail } }
     );
     if (!user) {
       return {
         errors: [
           {
-            field: "usernameOrEmail",
+            field: 'usernameOrEmail',
             message: "that username doesn't exist",
           },
         ],
@@ -201,8 +200,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "password",
-            message: "incorrect password",
+            field: 'password',
+            message: 'incorrect password',
           },
         ],
       };
