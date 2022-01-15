@@ -1,8 +1,18 @@
 {
+    "extends": ["config:base"],
+    "semanticCommits": true,
+
+    "rebaseWhen": "auto",
     "packageRules": [
         {
             "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
+            "automerge": true,
+            "automergeType": "branch"
+        },
+        {
+            "depTypeList": ["devDependencies"],
             "automerge": true
         }
-    ]
+    ],
+    "platformAutomerge": true
 }
