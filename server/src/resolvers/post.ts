@@ -1,6 +1,25 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Resolver,
+  Query,
+  Arg,
+  Mutation,
+  InputType,
+  Field,
+  Ctx,
+  UseMiddleware,
+} from 'type-graphql';
 
+import { MyContext } from '../types';
 import { Post } from '../entities/Post';
+import { isAuth } from '../middleware/isAuth';
+
+@InputType()
+class PostInput {
+  @Field()
+  title: string;
+  @Field()
+  text: string;
+}
 
 @Resolver()
 export class PostResolver {
@@ -8,38 +27,39 @@ export class PostResolver {
   async posts(): Promise<Post[]> {
     return Post.find();
   }
-  //
+
   @Query(() => Post, { nullable: true })
   post(@Arg('id') id: number): Promise<Post | undefined> {
     return Post.findOne(id);
   }
 
-  // createPost
   @Mutation(() => Post)
-  async createPost(@Arg('title') title: string): Promise<Post> {
-    // 2 sql queries
-    return Post.create({ title }).save();
+  @UseMiddleware(isAuth)
+  async createPost(
+    @Arg('input') input: PostInput,
+    @Ctx() { req }: MyContext
+  ): Promise<Post> {
+    return Post.create({
+      ...input,
+      creatorId: req.session.userId,
+    }).save();
   }
 
-  // updatePost
   @Mutation(() => Post, { nullable: true })
   async updatePost(
     @Arg('id') id: number,
     @Arg('title', () => String, { nullable: true }) title: string
   ): Promise<Post | null> {
-    //TODO combine 2 sql to 1
-    //! 1st
     const post = await Post.findOne(id);
     if (!post) {
       return null;
     }
-    // ! 2nd
-    if (typeof title !== 'undefined') Post.update({ id }, { title });
-
+    if (typeof title !== 'undefined') {
+      await Post.update({ id }, { title });
+    }
     return post;
   }
 
-  // deletePost
   @Mutation(() => Boolean)
   async deletePost(@Arg('id') id: number): Promise<boolean> {
     await Post.delete(id);

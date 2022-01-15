@@ -6,13 +6,11 @@ import { ApolloServer } from 'apollo-server-express';
 
 import { buildSchema } from 'type-graphql';
 
-import redis from 'redis';
-
 import session from 'express-session';
 
-import * as dotenv from 'dotenv';
-
 import connectRedis from 'connect-redis';
+
+import Redis from 'ioredis';
 
 import cors from 'cors';
 
@@ -25,9 +23,9 @@ import { User } from './entities/User';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
-dotenv.config();
-const devPort = process.env.PORT;
 
+const cookieParser = require('cookie-parser');
+// const redis = Redis();
 const main = async () => {
   const conn = await createConnection({
     type: 'postgres',
@@ -35,14 +33,14 @@ const main = async () => {
     username: 'postgres',
     password: 'postgres',
     logging: true,
-    synchronize: true,
+    // synchronize: true,
     entities: [Post, User],
   });
 
   const app = express();
 
   const RedisStore = connectRedis(session);
-  const redisClient = redis.createClient();
+  const redis = new Redis();
   app.use(
     cors({
       origin: '*',
@@ -53,19 +51,18 @@ const main = async () => {
     session({
       name: COOKIE_NAME,
       store: new RedisStore({
-        client: redisClient,
+        client: redis,
         disableTouch: true,
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
-        httpOnly: true,
-        sameSite: 'lax', // csrf
-        secure: __prod__, // cookie only works in https
+        
       },
-      saveUninitialized: false,
+      saveUninitialized: true,
       secret: 'qowiueojwojfalksdjoqiwueo',
       resave: false,
-    })
+    }),
+    cookieParser()
   );
 
   const apolloServer = new ApolloServer({
@@ -73,17 +70,16 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ req, res, redis }),
+    context: ({ req, res,  }) => ({ req, res, redis }),
   });
   await apolloServer.start();
-
   apolloServer.applyMiddleware({
     app,
     cors: false,
   });
 
   app.listen(4000, () => {
-    console.log(`server started on ${devPort}`);
+    console.log('server started on localhost:4000');
   });
 };
 

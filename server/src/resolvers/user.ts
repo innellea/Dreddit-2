@@ -22,11 +22,6 @@ import { validateRegister } from '../utils/validateRegister';
 
 import { UsernamePasswordInput } from './UsernamePasswordInput';
 
-// TODO
-// MOVE REDIS TO types.ts
-// weird issue, not sure why
-const Redis = require('ioredis');
-const redis = new Redis();
 @ObjectType()
 class FieldError {
   @Field()
@@ -34,10 +29,12 @@ class FieldError {
   @Field()
   message: string;
 }
+
 @ObjectType()
 class UserResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
+
   @Field(() => User, { nullable: true })
   user?: User;
 }
@@ -48,7 +45,7 @@ export class UserResolver {
   async changePassword(
     @Arg('token') token: string,
     @Arg('newPassword') newPassword: string,
-    @Ctx() { req }: MyContext
+    @Ctx() { redis, req }: MyContext
   ): Promise<UserResponse> {
     if (newPassword.length <= 2) {
       return {
@@ -73,6 +70,7 @@ export class UserResolver {
         ],
       };
     }
+
     const userIdNum = parseInt(userId);
     const user = await User.findOne(userIdNum);
 
@@ -103,33 +101,43 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async forgotPassword(@Arg('email') email: string, @Ctx() {}: MyContext) {
+  async forgotPassword(
+    @Arg('email') email: string,
+    @Ctx() { redis }: MyContext
+  ) {
     const user = await User.findOne({ where: { email } });
     if (!user) {
       // the email is not in the db
       return true;
     }
+
     const token = v4();
+
     await redis.set(
       FORGET_PASSWORD_PREFIX + token,
       user.id,
       'ex',
       1000 * 60 * 60 * 24 * 3
     ); // 3 days
+
     await sendEmail(
       email,
       `<a href="http://localhost:3000/change-password/${token}">reset password</a>`
     );
+
     return true;
   }
+
   @Query(() => User, { nullable: true })
   me(@Ctx() { req }: MyContext) {
     // you are not logged in
     if (!req.session.userId) {
       return null;
     }
+
     return User.findOne(req.session.userId);
   }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
@@ -139,9 +147,11 @@ export class UserResolver {
     if (errors) {
       return { errors };
     }
+
     const hashedPassword = await argon2.hash(options.password);
     let user;
     try {
+      // User.create({}).save()
       const result = await getConnection()
         .createQueryBuilder()
         .insert()
@@ -168,12 +178,15 @@ export class UserResolver {
         };
       }
     }
+
     // store user id session
     // this will set a cookie on the user
     // keep them logged in
     req.session.userId = user.id;
+
     return { user };
   }
+
   @Mutation(() => UserResponse)
   async login(
     @Arg('usernameOrEmail') usernameOrEmail: string,
@@ -206,11 +219,14 @@ export class UserResolver {
         ],
       };
     }
+
     req.session.userId = user.id;
+
     return {
       user,
     };
   }
+
   @Mutation(() => Boolean)
   logout(@Ctx() { req, res }: MyContext) {
     return new Promise((resolve) =>
@@ -221,6 +237,7 @@ export class UserResolver {
           resolve(false);
           return;
         }
+
         resolve(true);
       })
     );
