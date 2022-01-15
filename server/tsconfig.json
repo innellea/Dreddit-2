@@ -9,7 +9,7 @@
     // "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "module": "commonjs",
-    "useUnknownInCatchVariables": false,
+    // "useUnknownInCatchVariables": false,
     "declaration": true,
     "skipLibCheck": true,
     "inlineSourceMap": true,
