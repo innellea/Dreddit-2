@@ -18,11 +18,11 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^1.6.10",
-    "@emotion/cache": "^11.5.0",
+    "@emotion/cache": "^11.7.1",
     "@emotion/core": "^11.0.0",
     "@emotion/react": "^11.5.0",
     "@emotion/server": "^11.4.0",
-    "@emotion/styled": "^11.3.0",
+    "@emotion/styled": "^11.6.0",
     "@fontsource/lexend": "4.5.2",
     "@types/next": "^9.0.0",
     "@urql/exchange-graphcache": "^4.3.6",
