@@ -28,7 +28,7 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "apollo-server-express": "^3.0.0",
+    "apollo-server-express": "^3.6.1",
     "argon2": "^0.28.3",
     "connect-redis": "^6.0.0",
     "cors": "^2.8.5",
