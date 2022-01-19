@@ -1,8 +1,8 @@
-import { Box, Button, Flex, Heading, Link } from '@chakra-ui/react';
-import { useLogoutMutation, useMeQuery } from 'generated/graphql';
-import NextLink from 'next/link';
-import { isServer } from 'utils/isServer';
-import ThemeToggle from './ThemeToggle';
+import { Box, Button, Flex, Heading, Link } from "@chakra-ui/react";
+import { useLogoutMutation, useMeQuery } from "generated/graphql";
+import NextLink from "next/link";
+import { isServer } from "utils/isServer";
+import ThemeToggle from "./ThemeToggle";
 
 interface HeaderProps {}
 export const Header: React.FC<HeaderProps> = ({}) => {
@@ -11,7 +11,7 @@ export const Header: React.FC<HeaderProps> = ({}) => {
     pause: isServer(),
   });
   let body = null;
-  console.log(data?.me?.username);
+  console.log("username: ", data);
   // data is loading
   if (fetching) {
     // user not logged in
@@ -32,6 +32,9 @@ export const Header: React.FC<HeaderProps> = ({}) => {
     body = (
       <>
         <Box>Hello, {data.me.username}</Box>
+        <NextLink href="/create-post">
+          <Link m={3}>Create Post</Link>
+        </NextLink>
         <Button
           onClick={() => {
             logout();

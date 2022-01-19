@@ -4,7 +4,7 @@ import { Box, Button, Flex, Link } from "@chakra-ui/react";
 import { Wrapper } from "components/Wrapper";
 import { InputField } from "components/InputField";
 import { useMutation } from "urql";
-import { useLoginMutation } from "generated/graphql";
+import { useLoginMutation, useMeQuery } from "generated/graphql";
 import { toErrorMap } from "utils/toErrorMap";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -14,6 +14,10 @@ const Login: React.FC<{}> = ({}) => {
   //! TODO: add validation
   const router = useRouter();
   const [, login] = useLoginMutation();
+  const [{ data, fetching }] = useMeQuery();
+  if (data?.me) {
+    router.replace("/");
+  }
   return (
     <Wrapper variant="small">
       <Formik
