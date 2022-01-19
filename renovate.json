@@ -1,22 +1,22 @@
-{
-    "extends": ["config:base"],
-    "semanticCommits": true,
-    "rangeStrategy": "bump",
-    "rebaseLabel": "rebase",
-    "rebaseWhen": "auto",
-    "requiredStatusChecks": [],
-    "packageRules": [
-        {
-            "updateTypes": ["minor", "patch", "pin", "digest"],
-            "automerge": true
-        },
-        {
-            "depTypeList": ["devDependencies"],
-            "automerge": true
-        },
-        {
-            "packagePatterns": ["eslint"],
-            "groupName": "eslint"
-        }
-    ]
-}
+// {
+//     "extends": ["config:base"],
+//     "semanticCommits": true,
+//     "rangeStrategy": "bump",
+//     "rebaseLabel": "rebase",
+//     "rebaseWhen": "auto",
+//     "requiredStatusChecks": [],
+//     "packageRules": [
+//         {
+//             "updateTypes": ["minor", "patch", "pin", "digest"],
+//             "automerge": true
+//         },
+//         {
+//             "depTypeList": ["devDependencies"],
+//             "automerge": true
+//         },
+//         {
+//             "packagePatterns": ["eslint"],
+//             "groupName": "eslint"
+//         }
+//     ]
+// }
