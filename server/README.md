@@ -1,3 +1,0 @@
-# lireddit-server
-
-lireddit-server
