@@ -6,16 +6,21 @@ import {
   Ctx,
   ObjectType,
   Query,
-} from "type-graphql";
-import { MyContext } from "../types";
-import { User } from "../entities/User";
-import argon2 from "argon2";
-import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
-import { UsernamePasswordInput } from "./UsernamePasswordInput";
-import { validateRegister } from "../utils/validateRegister";
-import { sendEmail } from "../utils/sendEmail";
-import { v4 } from "uuid";
-import { getConnection } from "typeorm";
+} from 'type-graphql';
+
+import argon2 from 'argon2';
+
+import { v4 } from 'uuid';
+
+import { getConnection } from 'typeorm';
+
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../constants';
+import { MyContext } from '../types';
+import { User } from '../entities/User';
+import sendEmail from '../utils/sendEmails';
+import { validateRegister } from '../utils/validateRegister';
+
+import { UsernamePasswordInput } from './UsernamePasswordInput';
 
 @ObjectType()
 class FieldError {
@@ -38,16 +43,16 @@ class UserResponse {
 export class UserResolver {
   @Mutation(() => UserResponse)
   async changePassword(
-    @Arg("token") token: string,
-    @Arg("newPassword") newPassword: string,
+    @Arg('token') token: string,
+    @Arg('newPassword') newPassword: string,
     @Ctx() { redis, req }: MyContext
   ): Promise<UserResponse> {
     if (newPassword.length <= 2) {
       return {
         errors: [
           {
-            field: "newPassword",
-            message: "length must be greater than 2",
+            field: 'newPassword',
+            message: 'length must be greater than 2',
           },
         ],
       };
@@ -59,8 +64,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "token",
-            message: "token expired",
+            field: 'token',
+            message: 'token expired',
           },
         ],
       };
@@ -73,8 +78,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "token",
-            message: "user no longer exists",
+            field: 'token',
+            message: 'user no longer exists',
           },
         ],
       };
@@ -97,7 +102,7 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   async forgotPassword(
-    @Arg("email") email: string,
+    @Arg('email') email: string,
     @Ctx() { redis }: MyContext
   ) {
     const user = await User.findOne({ where: { email } });
@@ -111,7 +116,7 @@ export class UserResolver {
     await redis.set(
       FORGET_PASSWORD_PREFIX + token,
       user.id,
-      "ex",
+      'ex',
       1000 * 60 * 60 * 24 * 3
     ); // 3 days
 
@@ -135,7 +140,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg('options') options: UsernamePasswordInput,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const errors = validateRegister(options);
@@ -156,18 +161,18 @@ export class UserResolver {
           email: options.email,
           password: hashedPassword,
         })
-        .returning("*")
+        .returning('*')
         .execute();
       user = result.raw[0];
     } catch (err) {
       //|| err.detail.includes("already exists")) {
       // duplicate username error
-      if (err.code === "23505") {
+      if (err.code === '23505') {
         return {
           errors: [
             {
-              field: "username",
-              message: "username already taken",
+              field: 'username',
+              message: 'username already taken',
             },
           ],
         };
@@ -184,12 +189,12 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("usernameOrEmail") usernameOrEmail: string,
-    @Arg("password") password: string,
+    @Arg('usernameOrEmail') usernameOrEmail: string,
+    @Arg('password') password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const user = await User.findOne(
-      usernameOrEmail.includes("@")
+      usernameOrEmail.includes('@')
         ? { where: { email: usernameOrEmail } }
         : { where: { username: usernameOrEmail } }
     );
@@ -197,7 +202,7 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "usernameOrEmail",
+            field: 'usernameOrEmail',
             message: "that username doesn't exist",
           },
         ],
@@ -208,8 +213,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "password",
-            message: "incorrect password",
+            field: 'password',
+            message: 'incorrect password',
           },
         ],
       };

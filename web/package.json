@@ -38,8 +38,7 @@
     "react-icons": "^4.3.1",
     "react-is": "^17.0.2",
     "react-ssr-prepass": "^1.5.0",
-    "urql": "^2.0.6",
-    "wonka": "^4.0.15"
+    "urql": "^2.0.6"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^16.0.0",
