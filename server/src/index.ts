@@ -16,6 +16,8 @@ import cors from 'cors';
 
 import { createConnection } from 'typeorm';
 
+import helmet from 'helmet';
+
 import { __prod__, COOKIE_NAME } from './constants';
 
 import { Post } from './entities/Post';
@@ -45,6 +47,7 @@ const main = async () => {
             credentials: true
         })
     );
+
     app.use(
         session({
             name: COOKIE_NAME,
@@ -71,7 +74,7 @@ const main = async () => {
         }),
         context: ({ req, res }) => ({ req, res, redis })
     });
-
+    await apolloServer.start();
     apolloServer.applyMiddleware({
         app,
         cors: false

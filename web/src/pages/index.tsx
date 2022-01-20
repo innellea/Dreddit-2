@@ -9,12 +9,13 @@ import { createUrqlClient } from "utils/createUrqlClient";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
 const Home = () => {
-  const [{ data }]: any = usePostsQuery({
+  
+  const [{ data }] = usePostsQuery({
     variables: {
       limit: 10,
-      cursor:""
     },
   });
+  
   return (
     <Box mb={8} w="full">
       <SomeText />
