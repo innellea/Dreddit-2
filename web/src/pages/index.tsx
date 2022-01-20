@@ -9,9 +9,10 @@ import { createUrqlClient } from "utils/createUrqlClient";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
 const Home = () => {
-  const [{ data }] = usePostsQuery({
-    variables :  {
-      limit : 10,
+  const [{ data }]: any = usePostsQuery({
+    variables: {
+      limit: 10,
+      cursor:""
     },
   });
   return (
