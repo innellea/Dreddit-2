@@ -1,32 +1,74 @@
-import { Box } from "@chakra-ui/react";
-
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Link,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import CTASection from "components/CTASection";
 import SomeImage from "components/SomeImage";
 import SomeText from "components/SomeText";
 import { usePostsQuery } from "generated/graphql";
 import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "utils/createUrqlClient";
 import NextLink from "next/link";
-import { Link } from "@chakra-ui/react";
+import { title } from "process";
+import { useState } from "react";
+import { createUrqlClient } from "utils/createUrqlClient";
+
 const Home = () => {
-  
-  const [{ data }] = usePostsQuery({
-    variables: {
-      limit: 10,
-    },
+  const [variables, setVariables] = useState({
+    limit: 10,
+    cursor: null as null | string,
   });
-  
+  const [{ data, fetching }] = usePostsQuery({ variables });
+
+  if (!fetching && !data) {
+    return <div>query failed for some reason</div>;
+  }
+
   return (
     <Box mb={8} w="full">
       <SomeText />
-      <NextLink href="/create-post">
-        <Link m={3}>Create Post</Link>
-      </NextLink>
-      {!data ? (
-        <div>loading...</div>
-      ) : (
-        data.posts.map((p) => <div key={p.id}>{p.title}</div>)
-      )}
+      <Flex>
+        <NextLink href="/create-post">
+          <Button fontSize={18} ml="auto" mb={5}>
+            Create Post
+          </Button>
+        </NextLink>
+      </Flex>
+      <Stack>
+        {!data && fetching ? (
+          <div>loading...</div>
+        ) : (
+          data!.posts.map((p) => (
+            <>
+              <Box key={p.id} p={5} shadow="md" borderWidth="2px">
+                <Heading fontSize="xl">{p.title}</Heading>
+                <Text mt={4}>{p.textSnippet}...</Text>
+              </Box>
+            </>
+          ))
+        )}
+      </Stack>
+      {data ? (
+        <Flex>
+          <Button
+            onClick={() => {
+              setVariables({
+                limit: variables.limit,
+                cursor: data.posts[data.posts.length - 1].createdAt,
+              });
+            }}
+            isLoading={fetching}
+            m="auto"
+            my={6}
+          >
+            Load more
+          </Button>
+        </Flex>
+      ) : null}
       <SomeImage />
       <CTASection />
     </Box>

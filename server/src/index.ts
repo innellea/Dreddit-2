@@ -14,9 +14,11 @@ import connectRedis from 'connect-redis';
 
 import cors from 'cors';
 
-import { createConnection } from 'typeorm';
+import { createConnection, Transaction } from 'typeorm';
 
 import helmet from 'helmet';
+
+import path from 'path';
 
 import { __prod__, COOKIE_NAME } from './constants';
 
@@ -25,7 +27,6 @@ import { User } from './entities/User';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
-
 const main = async () => {
     const conn = await createConnection({
         type: 'postgres',
@@ -34,17 +35,18 @@ const main = async () => {
         password: 'postgres',
         logging: true,
         synchronize: true,
+        migrations: [path.join(__dirname, './migrations/*')],
         entities: [Post, User]
     });
-
+    await conn.runMigrations({ transaction: 'all' });
     const app = express();
 
     const RedisStore = connectRedis(session);
     const redis = new Redis();
     app.use(
         cors({
-            origin: '*',
-            // origin: 'http://localhost:3000',
+            // origin: '*',
+            origin: 'http://localhost:3000',
             credentials: true
         })
     );
