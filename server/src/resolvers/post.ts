@@ -1,29 +1,30 @@
-/* eslint-disable simple-import-sort/imports */
 import {
-    Arg,
-    Ctx,
-    Field,
-    FieldResolver,
-    InputType,
-    Int,
-    Mutation,
-    ObjectType,
-    Query,
     Resolver,
+    Query,
+    Arg,
+    Mutation,
+    InputType,
+    Field,
+    Ctx,
+    UseMiddleware,
+    Int,
+    FieldResolver,
     Root,
-    UseMiddleware} from 'type-graphql';
+    ObjectType,
+    Info
+} from 'type-graphql';
 
 import { getConnection } from 'typeorm';
 
 import { MyContext } from '../types';
 import { Post } from '../entities/Post';
+import { Updoot } from '../entities/Updoot';
 import { isAuth } from '../middleware/isAuth';
 
 @InputType()
 class PostInput {
     @Field()
     title: string;
-
     @Field()
     text: string;
 }
@@ -32,7 +33,6 @@ class PostInput {
 class PaginatedPosts {
     @Field(() => [Post])
     posts: Post[];
-
     @Field()
     hasMore: boolean;
 }
@@ -44,56 +44,91 @@ export class PostResolver {
         return post.text.slice(0, 50);
     }
 
-    
-    
+    @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
+    async vote(
+        @Arg('postId', () => Int) postId: number,
+        @Arg('value', () => Int) value: number,
+        @Ctx() { req }: MyContext
+    ) {
+        const isUpdoot = value !== -1;
+        const realValue = isUpdoot ? 1 : -1;
+        const { userId } = req.session;
+        // await Updoot.insert({
+        //   userId,
+        //   postId,
+        //   value: realValue,
+        // });
+        await getConnection().query(
+            `
+      START TRANSACTION;
+  
+      insert into updoot ("userId", "postId", value)
+      values (${userId},${postId},${realValue});
+  
+      update post
+      set points = points + ${realValue}
+      where id = ${postId};
+  
+      COMMIT;
+      `
+        );
+        return true;
+    }
+
     @Query(() => PaginatedPosts)
     async posts(
         @Arg('limit', () => Int) limit: number,
-        @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
+        @Arg('cursor', () => String, { nullable: true }) cursor: string | null
     ): Promise<PaginatedPosts> {
         // 20 -> 21
         const realLimit = Math.min(50, limit);
-        const realLimitPlusOne = realLimit + 1;
-        const replacements:any[] = [realLimitPlusOne];
+        const reaLimitPlusOne = realLimit + 1;
+
+        const replacements: any[] = [reaLimitPlusOne];
 
         if (cursor) {
-            replacements.push(new Date(parseInt(cursor, 10)));
+            replacements.push(new Date(parseInt(cursor)));
         }
+
         const posts = await getConnection().query(
             `
-       select p.*, 
-       json_build_object('id', u.id,
-       'username', u.username,
-       'email',u.email,
-       'createdAt', u."createdAt",
-       'updatedAt', u."updatedAt"
-       ) creator
-       from post p
-       inner join public.user u on u.id = p."creatorId"
-       ${cursor ? `where p."createdAt" < '$2'` : ''}
-       order by p."createdAt" DESC
-       limit $1
-        `,
+      select p.*,
+      json_build_object(
+        'id', u.id,
+        'username', u.username,
+        'email', u.email,
+        'createdAt', u."createdAt",
+        'updatedAt', u."updatedAt"
+        ) creator
+      from post p
+      inner join public.user u on u.id = p."creatorId"
+      ${cursor ? `where p."createdAt" < $2` : ''}
+      order by p."createdAt" DESC
+      limit $1
+      `,
             replacements
         );
+
         // const qb = getConnection()
-        //     .getRepository(Post)
-        //     .createQueryBuilder('p')
-        //     .innerJoinAndSelect('p.creator', 'u', 'u.id = p."creatorId"')
-        //     .orderBy('p."createdAt"', 'DESC')
-        //     .take(realLimitPlusOne);
+        //   .getRepository(Post)
+        //   .createQueryBuilder("p")
+        //   .innerJoinAndSelect("p.creator", "u", 'u.id = p."creatorId"')
+        //   .orderBy('p."createdAt"', "DESC")
+        //   .take(reaLimitPlusOne);
 
         // if (cursor) {
-        //     qb.where('p."createdAt" < :cursor', {
-        //         cursor: new Date(parseInt(cursor))
-        //     });
+        //   qb.where('p."createdAt" < :cursor', {
+        //     cursor: new Date(parseInt(cursor)),
+        //   });
         // }
 
         // const posts = await qb.getMany();
-        console.log('posts', posts);
+        // console.log("posts: ", posts);
+
         return {
             posts: posts.slice(0, realLimit),
-            hasMore: posts.length === realLimitPlusOne
+            hasMore: posts.length === reaLimitPlusOne
         };
     }
 

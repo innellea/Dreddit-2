@@ -22,6 +22,7 @@ import { createConnection } from 'typeorm';
 import { __prod__, COOKIE_NAME } from './constants';
 
 import { Post } from './entities/Post';
+import { Updoot } from './entities/Updoot';
 import { User } from './entities/User';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
@@ -36,7 +37,7 @@ const main = async () => {
         logging: true,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],
-        entities: [Post, User]
+        entities: [Post, User,Updoot]
     });
     await conn.runMigrations();
     const app = express();
@@ -45,8 +46,8 @@ const main = async () => {
     const redis = new Redis();
     app.use(
         cors({
-            origin: '*',
-            // origin: 'http://localhost:3000',
+            // origin: '*',
+            origin: 'http://localhost:3000',
             credentials: true
         })
     );
