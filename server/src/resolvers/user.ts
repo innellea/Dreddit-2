@@ -1,4 +1,5 @@
 import argon2 from 'argon2';
+
 import {
     Arg,
     Ctx,
@@ -10,14 +11,17 @@ import {
     Resolver,
     Root
 } from 'type-graphql';
+
 import { getConnection } from 'typeorm';
+
 import { v4 } from 'uuid';
 
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../constants';
-import { User } from '../entities/User';
 import { MyContext } from '../types';
+import { User } from '../entities/User';
 import { sendEmail } from '../utils/sendEmail';
 import { validateRegister } from '../utils/validateRegister';
+
 import { UsernamePasswordInput } from './UsernamePasswordInput';
 
 @ObjectType()
@@ -46,7 +50,7 @@ export class UserResolver {
         if (req.session.userId === user.id) {
             return user.email;
         }
-
+// current user can't see someone else's email
         return '';
     }
 
