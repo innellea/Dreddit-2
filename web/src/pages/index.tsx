@@ -23,7 +23,6 @@ const Home = () => {
     cursor: null as null | string,
   });
   const [{ data, fetching }] = usePostsQuery({ variables });
-
   if (!fetching && !data) {
     return <div>query failed for some reason</div>;
   }
@@ -42,7 +41,7 @@ const Home = () => {
         {!data && fetching ? (
           <div>loading...</div>
         ) : (
-          data!.posts.map((p) => (
+          data!.posts.posts.map((p) => (
             <>
               <Box key={p.id} p={5} shadow="md" borderWidth="2px">
                 <Heading fontSize="xl">{p.title}</Heading>
@@ -52,13 +51,13 @@ const Home = () => {
           ))
         )}
       </Stack>
-      {data ? (
+      {data && data.posts.hasMore ? (
         <Flex>
           <Button
             onClick={() => {
               setVariables({
                 limit: variables.limit,
-                cursor: data.posts[data.posts.length - 1].createdAt,
+                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
               });
             }}
             isLoading={fetching}
