@@ -13,6 +13,8 @@
     "outDir": "./dist",
     "moduleResolution": "node",
     "removeComments": true,
+    "importHelpers": true,
+    "forceConsistentCasingInFileNames": true,
     // "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -33,6 +35,7 @@
   ],
   "include": [
     "./src/**/*.tsx",
-    "./src/**/*.ts"
-, "src/migrations/1642773267630-FakePosts2.ts"  ]
+    "./src/**/*.ts",
+    "src/migrations/1642773267630-FakePosts2.ts"
+  ]
 }

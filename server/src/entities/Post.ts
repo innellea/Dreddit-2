@@ -1,14 +1,12 @@
-import { ObjectType, Field } from 'type-graphql';
-
+import { Field,ObjectType } from 'type-graphql';
 import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
     BaseEntity,
-    ManyToOne
-} from 'typeorm';
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn} from 'typeorm';
 
 import { User } from './User';
 

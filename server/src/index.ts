@@ -1,24 +1,23 @@
+/* eslint-disable simple-import-sort/imports */
 import 'reflect-metadata';
 
-import express from 'express';
-
 import { ApolloServer } from 'apollo-server-express';
-
-import { buildSchema } from 'type-graphql';
-
-import Redis from 'ioredis';
-
-import session from 'express-session';
 
 import connectRedis from 'connect-redis';
 
 import cors from 'cors';
 
-import { createConnection, Transaction } from 'typeorm';
+import express from 'express';
 
-import helmet from 'helmet';
+import session from 'express-session';
 
-import path from 'path';
+import Redis from 'ioredis';
+
+import path from 'node:path';
+
+import { buildSchema } from 'type-graphql';
+
+import { createConnection } from 'typeorm';
 
 import { __prod__, COOKIE_NAME } from './constants';
 
@@ -27,6 +26,7 @@ import { User } from './entities/User';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
+
 const main = async () => {
     const conn = await createConnection({
         type: 'postgres',
@@ -88,6 +88,6 @@ const main = async () => {
     });
 };
 
-main().catch((err) => {
-    console.error(err);
+main().catch((error) => {
+    console.error(error);
 });

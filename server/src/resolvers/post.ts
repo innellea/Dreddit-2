@@ -1,18 +1,17 @@
+/* eslint-disable simple-import-sort/imports */
 import {
-    Resolver,
-    Query,
     Arg,
-    Mutation,
-    InputType,
-    Field,
     Ctx,
-    UseMiddleware,
-    Int,
+    Field,
     FieldResolver,
-    Root,
+    InputType,
+    Int,
+    Mutation,
     ObjectType,
-    Info
-} from 'type-graphql';
+    Query,
+    Resolver,
+    Root,
+    UseMiddleware} from 'type-graphql';
 
 import { getConnection } from 'typeorm';
 
@@ -24,6 +23,7 @@ import { isAuth } from '../middleware/isAuth';
 class PostInput {
     @Field()
     title: string;
+
     @Field()
     text: string;
 }
@@ -32,6 +32,7 @@ class PostInput {
 class PaginatedPosts {
     @Field(() => [Post])
     posts: Post[];
+
     @Field()
     hasMore: boolean;
 }
@@ -43,20 +44,18 @@ export class PostResolver {
         return post.text.slice(0, 50);
     }
 
-    
     @Query(() => PaginatedPosts)
     async posts(
         @Arg('limit', () => Int) limit: number,
         @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
-        @Info() info: any
     ): Promise<PaginatedPosts> {
         // 20 -> 21
         const realLimit = Math.min(50, limit);
         const realLimitPlusOne = realLimit + 1;
-        const replacements: any[] = [realLimitPlusOne];
+        const replacements:any[] = [realLimitPlusOne];
 
         if (cursor) {
-            replacements.push(new Date(parseInt(cursor)));
+            replacements.push(new Date(parseInt(cursor, 10)));
         }
         const posts = await getConnection().query(
             `

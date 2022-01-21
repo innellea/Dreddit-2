@@ -1,19 +1,10 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Link,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import CTASection from "components/CTASection";
 import SomeImage from "components/SomeImage";
 import SomeText from "components/SomeText";
 import { usePostsQuery } from "generated/graphql";
 import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
-import { title } from "process";
 import { useState } from "react";
 import { createUrqlClient } from "utils/createUrqlClient";
 
