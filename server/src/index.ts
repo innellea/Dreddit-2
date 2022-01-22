@@ -37,7 +37,7 @@ const main = async () => {
         logging: true,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],
-        entities: [Post, User,Updoot]
+        entities: [Post, User, Updoot]
     });
     await conn.runMigrations();
     const app = express();

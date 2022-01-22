@@ -1,4 +1,13 @@
-import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import CTASection from "components/CTASection";
 import SomeImage from "components/SomeImage";
 import SomeText from "components/SomeText";
@@ -7,10 +16,12 @@ import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useState } from "react";
 import { createUrqlClient } from "utils/createUrqlClient";
+import { BiUpvote, BiDownvote } from "react-icons/bi";
+import { UpdootSection } from "components/UpdootSection";
 
 const Home = () => {
   const [variables, setVariables] = useState({
-    limit: 10,
+    limit: 15,
     cursor: null as null | string,
   });
   const [{ data, fetching }] = usePostsQuery({ variables });
@@ -34,10 +45,14 @@ const Home = () => {
         ) : (
           data!.posts.posts.map((p) => (
             <>
-              <Box key={p.id} p={5} shadow="md" borderWidth="2px">
-                <Heading fontSize="xl">{p.title}</Heading>
-                <Text mt={4}>{p.textSnippet}...</Text>
-              </Box>
+              <Flex key={p.id} p={5} shadow="md" borderWidth="2px">
+                <UpdootSection post={p}></UpdootSection>
+                <Box>
+                  <Heading fontSize="xl">{p.title}</Heading>
+                  <Text>posted by {p.creator.username}</Text>
+                  <Text mt={4}>{p.textSnippet}...</Text>
+                </Box>
+              </Flex>
             </>
           ))
         )}
