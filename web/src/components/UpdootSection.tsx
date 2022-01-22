@@ -36,10 +36,12 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
             value: 1,
           });
           setLoadingState("not-loading");
+          console.log(post.voteStatus);
         }}
         isLoading={loadingState === "updoot-loading"}
         variant="outline"
-        colorScheme="teal"
+        colorScheme={post.voteStatus === 1 ? "teal" : undefined}
+        // colorScheme="teal"
         aria-label="upvote"
         fontSize="20px"
         icon={<BiUpvote />}
@@ -47,6 +49,7 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
       {post.points}
       <IconButton
         onClick={async () => {
+          console.log(post.voteStatus);
           if (post.voteStatus === -1) {
             return;
           }
@@ -59,7 +62,7 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
         }}
         isLoading={loadingState === "downdoot-loading"}
         variant="outline"
-        colorScheme="teal"
+        colorScheme={post.voteStatus === -1 ? "red" : undefined}
         aria-label="Downvote"
         fontSize="20px"
         icon={<BiDownvote />}
