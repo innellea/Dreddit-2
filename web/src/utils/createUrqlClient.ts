@@ -4,14 +4,13 @@ import {
   dedupExchange,
   Exchange,
   fetchExchange,
+  gql,
   stringifyVariables,
 } from "urql";
 
 import { pipe, tap } from "wonka";
 
 import Router from "next/router";
-
-import gql from "graphql-tag";
 
 import {
   LoginMutation,
@@ -49,14 +48,14 @@ const cursorPagination = (): Resolver => {
 
     const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
     const isItInTheCache = cache.resolve(
-      cache.resolveFieldByKey(entityKey, fieldKey) as string,
+      cache.resolve(entityKey, fieldKey) as string,
       "posts"
     );
     info.partial = !isItInTheCache;
     let hasMore = true;
     const results: string[] = [];
     fieldInfos.forEach((fi) => {
-      const key = cache.resolveFieldByKey(entityKey, fi.fieldKey) as string;
+      const key = cache.resolve(entityKey, fi.fieldKey) as string;
       const data = cache.resolve(key, "posts") as string[];
       const _hasMore = cache.resolve(key, "hasMore");
       if (!_hasMore) {
