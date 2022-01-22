@@ -5,6 +5,7 @@ import {
   Flex,
   Heading,
   IconButton,
+  Link,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -16,7 +17,6 @@ import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useState } from "react";
 import { createUrqlClient } from "utils/createUrqlClient";
-import { BiUpvote, BiDownvote } from "react-icons/bi";
 import { UpdootSection } from "components/UpdootSection";
 
 const Home = () => {
@@ -48,7 +48,11 @@ const Home = () => {
               <Flex key={p.id} p={5} shadow="md" borderWidth="2px">
                 <UpdootSection post={p}></UpdootSection>
                 <Box>
-                  <Heading fontSize="xl">{p.title}</Heading>
+                  <NextLink href="/post/[id]" as={`/post/${p.id}`}>
+                    <Link>
+                      <Heading fontSize="xl">{p.title}</Heading>
+                    </Link>
+                  </NextLink>
                   <Text>posted by {p.creator.username}</Text>
                   <Text mt={4}>{p.textSnippet}...</Text>
                 </Box>
