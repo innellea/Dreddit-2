@@ -11,12 +11,15 @@ import { pipe, tap } from "wonka";
 
 import Router from "next/router";
 
+import gql from "graphql-tag";
+
 import {
   LoginMutation,
   LogoutMutation,
   MeDocument,
   MeQuery,
   RegisterMutation,
+  VoteMutationVariables,
 } from "../generated/graphql";
 
 import { betterUpdateQuery } from "./betterUpdateQuery";
@@ -34,37 +37,31 @@ const errorExchange: Exchange =
     );
   };
 
-export const cursorPagination = (): Resolver => {
+const cursorPagination = (): Resolver => {
   return (_parent, fieldArgs, cache, info) => {
     const { parentKey: entityKey, fieldName } = info;
-    console.log(entityKey, fieldName);
     const allFields = cache.inspectFields(entityKey);
     const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
-    console.log(allFields);
     const size = fieldInfos.length;
     if (size === 0) {
       return undefined;
     }
-    console.log("fieldArgs:", fieldArgs);
-    const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
-    console.log("key we created:", fieldKey);
 
+    const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
     const isItInTheCache = cache.resolve(
-      cache.resolve(entityKey, fieldKey) as string,
+      cache.resolveFieldByKey(entityKey, fieldKey) as string,
       "posts"
     );
-    console.info(`is it in the cache: ${isItInTheCache}`);
     info.partial = !isItInTheCache;
     let hasMore = true;
     const results: string[] = [];
     fieldInfos.forEach((fi) => {
-      const key = cache.resolve(entityKey, fi.fieldKey) as string;
+      const key = cache.resolveFieldByKey(entityKey, fi.fieldKey) as string;
       const data = cache.resolve(key, "posts") as string[];
       const _hasMore = cache.resolve(key, "hasMore");
       if (!_hasMore) {
         hasMore = _hasMore as boolean;
       }
-      console.log(`data: ${data} hasMore: ${hasMore}`);
       results.push(...data);
     });
 
@@ -74,58 +71,57 @@ export const cursorPagination = (): Resolver => {
       posts: results,
     };
 
-    // https://github.com/FormidableLabs/urql/blob/main/exchanges/graphcache/src/extras/simplePagination.ts
-    //   const visited = new Set();
-    //   let result: NullArray<string> = [];
-    //   let prevOffset: number | null = null;
+    // const visited = new Set();
+    // let result: NullArray<string> = [];
+    // let prevOffset: number | null = null;
 
-    //   for (let i = 0; i < size; i++) {
-    //     const { fieldKey, arguments: args } = fieldInfos[i];
-    //     if (args === null || !compareArgs(fieldArgs, args)) {
-    //       continue;
+    // for (let i = 0; i < size; i++) {
+    //   const { fieldKey, arguments: args } = fieldInfos[i];
+    //   if (args === null || !compareArgs(fieldArgs, args)) {
+    //     continue;
+    //   }
+
+    //   const links = cache.resolveFieldByKey(entityKey, fieldKey) as string[];
+    //   const currentOffset = args[cursorArgument];
+
+    //   if (
+    //     links === null ||
+    //     links.length === 0 ||
+    //     typeof currentOffset !== "number"
+    //   ) {
+    //     continue;
+    //   }
+
+    //   if (!prevOffset || currentOffset > prevOffset) {
+    //     for (let j = 0; j < links.length; j++) {
+    //       const link = links[j];
+    //       if (visited.has(link)) continue;
+    //       result.push(link);
+    //       visited.add(link);
     //     }
-
-    //     const links = cache.resolve(entityKey, fieldKey) as string[];
-    //     const currentOffset = args[cursorArgument];
-
-    //     if (
-    //       links === null ||
-    //       links.length === 0 ||
-    //       typeof currentOffset !== "number"
-    //     ) {
-    //       continue;
-    //     }
-
+    //   } else {
     //     const tempResult: NullArray<string> = [];
-
     //     for (let j = 0; j < links.length; j++) {
     //       const link = links[j];
     //       if (visited.has(link)) continue;
     //       tempResult.push(link);
     //       visited.add(link);
     //     }
-
-    //     if (
-    //       (!prevOffset || currentOffset > prevOffset) ===
-    //       (mergeMode === "after")
-    //     ) {
-    //       result = [...result, ...tempResult];
-    //     } else {
-    //       result = [...tempResult, ...result];
-    //     }
-
-    //     prevOffset = currentOffset;
+    //     result = [...tempResult, ...result];
     //   }
 
-    //   const hasCurrentPage = cache.resolve(entityKey, fieldName, fieldArgs);
-    //   if (hasCurrentPage) {
-    //     return result;
-    //   } else if (!(info as any).store.schema) {
-    //     return undefined;
-    //   } else {
-    //     info.partial = true;
-    //     return result;
-    //   }
+    //   prevOffset = currentOffset;
+    // }
+
+    // const hasCurrentPage = cache.resolve(entityKey, fieldName, fieldArgs);
+    // if (hasCurrentPage) {
+    //   return result;
+    // } else if (!(info as any).store.schema) {
+    //   return undefined;
+    // } else {
+    //   info.partial = true;
+    //   return result;
+    // }
   };
 };
 
@@ -133,7 +129,6 @@ export const createUrqlClient = (ssrExchange: any) => ({
   url: "http://localhost:4000/graphql",
   fetchOptions: {
     credentials: "include" as const,
-    // credentials: "omit",
   },
   exchanges: [
     dedupExchange,
@@ -148,8 +143,31 @@ export const createUrqlClient = (ssrExchange: any) => ({
       },
       updates: {
         Mutation: {
-          // invalidate queries when new posts are created
-          createPost: (_result, _args, cache, _info) => {
+          vote: (_result, args, cache, info) => {
+            const { postId, value } = args as VoteMutationVariables;
+            const data = cache.readFragment(
+              gql`
+                fragment _ on Post {
+                  id
+                  points
+                }
+              `,
+              { id: postId } as any
+            );
+
+            if (data) {
+              const newPoints = (data.points as number) + value;
+              cache.writeFragment(
+                gql`
+                  fragment __ on Post {
+                    points
+                  }
+                `,
+                { id: postId, points: newPoints } as any
+              );
+            }
+          },
+          createPost: (_result, args, cache, info) => {
             const allFields = cache.inspectFields("Query");
             const fieldInfos = allFields.filter(
               (info) => info.fieldName === "posts"
@@ -158,7 +176,7 @@ export const createUrqlClient = (ssrExchange: any) => ({
               cache.invalidate("Query", "posts", fi.arguments || {});
             });
           },
-          logout: (_result, _args, cache, _info) => {
+          logout: (_result, args, cache, info) => {
             betterUpdateQuery<LogoutMutation, MeQuery>(
               cache,
               { query: MeDocument },
@@ -166,7 +184,7 @@ export const createUrqlClient = (ssrExchange: any) => ({
               () => ({ me: null })
             );
           },
-          login: (_result, _args, cache, _info) => {
+          login: (_result, args, cache, info) => {
             betterUpdateQuery<LoginMutation, MeQuery>(
               cache,
               { query: MeDocument },
@@ -182,7 +200,7 @@ export const createUrqlClient = (ssrExchange: any) => ({
               }
             );
           },
-          register: (_result, _args, cache, _info) => {
+          register: (_result, args, cache, info) => {
             betterUpdateQuery<RegisterMutation, MeQuery>(
               cache,
               { query: MeDocument },
