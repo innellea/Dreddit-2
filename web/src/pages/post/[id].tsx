@@ -17,11 +17,7 @@ const Post = ({}) => {
   });
 
   if (fetching) {
-    return (
-      <Layout pageProps={""}>
-        <div>loading...</div>
-      </Layout>
-    );
+    return <div>loading...</div>;
   }
 
   if (error) {
@@ -29,18 +25,14 @@ const Post = ({}) => {
   }
 
   if (!data?.post) {
-    return (
-      <Layout pageProps={""}>
-        <Box>could not find post</Box>
-      </Layout>
-    );
+    return <Box>could not find post</Box>;
   }
 
   return (
-    <Layout pageProps={""}>
+    <>
       <Heading mb={4}>{data.post.title}</Heading>
       {data.post.text}
-    </Layout>
+    </>
   );
 };
 
