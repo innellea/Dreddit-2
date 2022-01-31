@@ -4,13 +4,14 @@ import {
   dedupExchange,
   Exchange,
   fetchExchange,
-  gql,
   stringifyVariables,
 } from "urql";
 
 import { pipe, tap } from "wonka";
 
 import Router from "next/router";
+
+import gql from "graphql-tag";
 
 import {
   LoginMutation,
@@ -19,6 +20,7 @@ import {
   MeQuery,
   RegisterMutation,
   VoteMutationVariables,
+  DeletePostMutationVariables,
 } from "../generated/graphql";
 
 import { betterUpdateQuery } from "./betterUpdateQuery";
@@ -81,7 +83,7 @@ const cursorPagination = (): Resolver => {
     //     continue;
     //   }
 
-    //   const links = cache.resolve(entityKey, fieldKey) as string[];
+    //   const links = cache.resolveFieldByKey(entityKey, fieldKey) as string[];
     //   const currentOffset = args[cursorArgument];
 
     //   if (
@@ -154,6 +156,12 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
         },
         updates: {
           Mutation: {
+            deletePost: (_result, args, cache, info) => {
+              cache.invalidate({
+                __typename: "Post",
+                id: (args as DeletePostMutationVariables).id,
+              });
+            },
             vote: (_result, args, cache, info) => {
               const { postId, value } = args as VoteMutationVariables;
               const data = cache.readFragment(

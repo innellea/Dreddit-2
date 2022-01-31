@@ -12,19 +12,21 @@ import {
 import CTASection from "components/CTASection";
 import SomeImage from "components/SomeImage";
 import SomeText from "components/SomeText";
-import { usePostsQuery } from "generated/graphql";
+import { useDeletePostMutation, usePostsQuery } from "generated/graphql";
 import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useState } from "react";
 import { createUrqlClient } from "utils/createUrqlClient";
 import { UpdootSection } from "components/UpdootSection";
-
+import { FaTrashAlt } from "react-icons/fa";
 const Home = () => {
   const [variables, setVariables] = useState({
     limit: 15,
     cursor: null as null | string,
   });
   const [{ data, fetching }] = usePostsQuery({ variables });
+
+  const [, deletePost] = useDeletePostMutation();
   if (!fetching && !data) {
     return <div>query failed for some reason</div>;
   }
@@ -47,14 +49,29 @@ const Home = () => {
             <>
               <Flex key={p.id} p={5} shadow="md" borderWidth="2px">
                 <UpdootSection post={p}></UpdootSection>
-                <Box>
+                <Box flex={"1"}>
                   <NextLink href="/post/[id]" as={`/post/${p.id}`}>
                     <Link>
                       <Heading fontSize="xl">{p.title}</Heading>
                     </Link>
                   </NextLink>
                   <Text>posted by {p.creator.username}</Text>
-                  <Text mt={4}>{p.textSnippet}...</Text>
+                  <Flex align={"center"}>
+                    <Text flex={"1"} mt={4}>
+                      {p.textSnippet}...
+                    </Text>
+
+                    <IconButton
+                      ml={"auto"}
+                      variant={"solid"}
+                      colorScheme={"red"}
+                      icon={<FaTrashAlt />}
+                      aria-label={"delete"}
+                      onClick={() => {
+                        deletePost({ id: p.id });
+                      }}
+                    ></IconButton>
+                  </Flex>
                 </Box>
               </Flex>
             </>

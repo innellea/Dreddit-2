@@ -30,22 +30,31 @@ export const Header: React.FC<HeaderProps> = ({}) => {
   // user logged in
   else {
     body = (
-      <>
-        <Box>Hello, {data.me.username}</Box>
-        <NextLink href="/create-post">
-          <Link m={3}>Create Post</Link>
-        </NextLink>
-        <Button
-          onClick={() => {
-            logout();
-          }}
-          isLoading={logoutFetching}
-          ml={3}
-          variant="link"
-        >
-          Logout
-        </Button>
-      </>
+      <Box>
+        <Box>
+          <Box flex={"auto"} textAlign={"end"}>
+            Hello, {data.me.username}
+          </Box>
+          <Box flex={"auto"} textAlign={"end"}>
+            <NextLink href="/create-post">
+              <Link size={"15"} flex={"auto"} m={3}>
+                Create Post
+              </Link>
+            </NextLink>
+            <Button
+              color="red.500"
+              onClick={() => {
+                logout();
+              }}
+              isLoading={logoutFetching}
+              ml={3}
+              variant="link"
+            >
+              Logout
+            </Button>
+          </Box>
+        </Box>
+      </Box>
     );
   }
   return (
