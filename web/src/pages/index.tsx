@@ -4,21 +4,25 @@ import {
   Button,
   Flex,
   Heading,
-  IconButton,
   Link,
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { EditDeletePostButtons } from "../components/EditDeletePostButtons";
+
 import CTASection from "components/CTASection";
 import SomeImage from "components/SomeImage";
 import SomeText from "components/SomeText";
-import { useDeletePostMutation, usePostsQuery } from "generated/graphql";
+import {
+  useDeletePostMutation,
+  useMeQuery,
+  usePostsQuery,
+} from "generated/graphql";
 import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useState } from "react";
 import { createUrqlClient } from "utils/createUrqlClient";
 import { UpdootSection } from "components/UpdootSection";
-import { FaTrashAlt } from "react-icons/fa";
 const Home = () => {
   const [variables, setVariables] = useState({
     limit: 15,
@@ -60,8 +64,13 @@ const Home = () => {
                     <Text flex={"1"} mt={4}>
                       {p.textSnippet}...
                     </Text>
-
-                    <IconButton
+                    <Box ml="auto">
+                      <EditDeletePostButtons
+                        id={p.id}
+                        creatorId={p.creator.id}
+                      />{" "}
+                    </Box>
+                    {/* <IconButton
                       ml={"auto"}
                       variant={"solid"}
                       colorScheme={"red"}
@@ -70,7 +79,7 @@ const Home = () => {
                       onClick={() => {
                         deletePost({ id: p.id });
                       }}
-                    ></IconButton>
+                    ></IconButton> */}
                   </Flex>
                 </Box>
               </Flex>

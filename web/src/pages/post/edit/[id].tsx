@@ -1,9 +1,9 @@
 import React from "react";
 import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
+import { createUrqlClient } from "utils/createUrqlClient";
 import { Heading, Box } from "@chakra-ui/react";
-import { useGetPostFromUrl } from "../../utils/useGetPostFromUrl";
-import { EditDeletePostButtons } from "../../components/EditDeletePostButtons";
+import { useGetPostFromUrl } from "utils/useGetPostFromUrl";
+import { EditDeletePostButtons } from "components/EditDeletePostButtons";
 
 const Post = ({}) => {
   const [{ data, error, fetching }] = useGetPostFromUrl();
