@@ -1,19 +1,28 @@
-import React from "react";
+import { Box, Button } from "@chakra-ui/react";
+import { Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "utils/createUrqlClient";
-import { Heading, Box } from "@chakra-ui/react";
-import { useGetPostFromUrl } from "utils/useGetPostFromUrl";
-import { EditDeletePostButtons } from "components/EditDeletePostButtons";
+import { useRouter } from "next/router";
+import React from "react";
+import { InputField } from "../../../components/InputField";
+import {
+  usePostQuery,
+  useUpdatePostMutation,
+} from "../../../generated/graphql";
+import { createUrqlClient } from "../../../utils/createUrqlClient";
+import { useGetIntId } from "../../../utils/useGetIntId";
 
-const Post = ({}) => {
-  const [{ data, error, fetching }] = useGetPostFromUrl();
-
+const EditPost = ({}) => {
+  const router = useRouter();
+  const intId = useGetIntId();
+  const [{ data, fetching }] = usePostQuery({
+    pause: intId === -1,
+    variables: {
+      id: intId,
+    },
+  });
+  const [, updatePost] = useUpdatePostMutation();
   if (fetching) {
     return <div>loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error.message}</div>;
   }
 
   if (!data?.post) {
@@ -21,15 +30,36 @@ const Post = ({}) => {
   }
 
   return (
-    <>
-      <Heading mb={4}>{data.post.title}</Heading>
-      <Box mb={4}>{data.post.text}</Box>
-      <EditDeletePostButtons
-        id={data.post.id}
-        creatorId={data.post.creator.id}
-      />
-    </>
+    <Formik
+      initialValues={{ title: data.post.title, text: data.post.text }}
+      onSubmit={async (values) => {
+        await updatePost({ id: intId, ...values });
+        router.back();
+      }}
+    >
+      {({ isSubmitting }) => (
+        <Form>
+          <InputField name="title" placeholder="title" label="Title" />
+          <Box mt={4}>
+            <InputField
+              textarea
+              name="text"
+              placeholder="text..."
+              label="Body"
+            />
+          </Box>
+          <Button
+            mt={4}
+            type="submit"
+            isLoading={isSubmitting}
+            variantColor="teal"
+          >
+            update post
+          </Button>
+        </Form>
+      )}
+    </Formik>
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Post);
+export default withUrqlClient(createUrqlClient)(EditPost);
