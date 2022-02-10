@@ -65,7 +65,7 @@
         "express": "^4.17.2",
         "express-session": "^1.17.2",
         "graphql": "^15.3.0",
-        "helmet": "^5.0.1",
+        "helmet": "^5.0.2",
         "ioredis": "^4.28.3",
         "nodemailer": "^6.7.2",
         "pg": "^8.7.1",
