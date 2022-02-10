@@ -16,8 +16,6 @@ import {
 
 import { getConnection } from 'typeorm';
 
-import { tmpdir } from 'os';
-
 import { MyContext } from '../types';
 import { Post } from '../entities/Post';
 import { Updoot } from '../entities/Updoot';
