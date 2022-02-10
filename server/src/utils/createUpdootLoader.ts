@@ -1,7 +1,6 @@
 import DataLoader from 'dataloader';
 
 import { Updoot } from '../entities/Updoot';
-import { User } from '../entities/User';
 
 // [{postId: 5, userId: 10}]
 // [{postId: 5, userId: 10, value: 1}]

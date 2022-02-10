@@ -1,6 +1,6 @@
 /* eslint-disable simple-import-sort/imports */
 import 'reflect-metadata';
-
+import 'dotenv-safe/config';
 import { ApolloServer } from 'apollo-server-express';
 
 import connectRedis from 'connect-redis';
@@ -19,6 +19,8 @@ import { buildSchema } from 'type-graphql';
 
 import { createConnection } from 'typeorm';
 
+import { env } from 'node:process';
+
 import { __prod__, COOKIE_NAME } from './constants';
 
 import { Post } from './entities/Post';
@@ -33,10 +35,9 @@ import { createUserLoader } from './utils/createUserLoader';
 const main = async () => {
     const conn = await createConnection({
         type: 'postgres',
-        database: 'dreddit',
-        username: 'postgres',
-        password: 'postgres',
+
         logging: true,
+        url: process.env.DATABASE_URL,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],
         entities: [Post, User, Updoot]
@@ -45,11 +46,13 @@ const main = async () => {
     const app = express();
 
     const RedisStore = connectRedis(session);
-    const redis = new Redis();
+    const redis = new Redis(process.env.REDIS_URL);
     app.use(
         cors({
             // origin: '*',
-            origin: 'http://localhost:3000',
+            origin: __prod__
+                ? process.env.CORS_ORIGIN
+                : process.env.CORS_ORIGIN_DEV,
             credentials: true
         })
     );
@@ -65,10 +68,11 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
                 httpOnly: true,
                 sameSite: 'lax', // csrf
-                secure: __prod__ // cookie only works in https
+                secure: __prod__, // cookie only works in https
+                domain: __prod__ ? '.dreddit.co.uk' : undefined
             },
             saveUninitialized: false,
-            secret: 'secret',
+            secret: process.env.SESSION_SECRET as string,
             resave: false
         })
     );
@@ -92,9 +96,10 @@ const main = async () => {
         cors: false
     });
 
-    app.listen(4000, () => {
-        console.log('server started on localhost:4000');
-    });
+    app.listen(4000),
+        () => {
+            console.log('server started on localhost:4000');
+        };
 };
 
 main().catch((error) => {

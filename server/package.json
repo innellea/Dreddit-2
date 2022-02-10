@@ -5,12 +5,14 @@
     "main": "index.js",
     "scripts": {
         "watch": "tsc -w",
+        "build": "tsc",
         "dev": "nodemon dist/index.js",
         "start": "node dist/index.js",
         "start2": "ts-node src/index.ts",
         "dev2": "nodemon --exec ts-node src/index.ts",
         "eslint": "eslint --color --ext .html,.js,.json,.jsx,.md,.ts,.tsx *.* src",
-        "eslint:fix": "npm run eslint -- --fix"
+        "eslint:fix": "npm run eslint -- --fix",
+        "compile:ts": "tsc --outDir ./lib --module commonjs ./src/typescript/app.ts"
     },
     "keywords": [],
     "author": "",
@@ -59,6 +61,7 @@
         "connect-redis": "^6.0.0",
         "cors": "^2.8.5",
         "dataloader": "^2.0.0",
+        "dotenv-safe": "^8.2.0",
         "express": "^4.17.2",
         "express-session": "^1.17.2",
         "graphql": "^15.3.0",
