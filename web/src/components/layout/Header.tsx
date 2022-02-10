@@ -1,11 +1,17 @@
 import { Box, Button, Flex, Heading, Link } from "@chakra-ui/react";
-import { useLogoutMutation, useMeQuery } from "generated/graphql";
+import {
+  useLogoutMutation,
+  useMeQuery,
+  useRegisterMutation,
+} from "generated/graphql";
 import NextLink from "next/link";
 import { isServer } from "utils/isServer";
 import ThemeToggle from "./ThemeToggle";
+import { useRouter } from "next/router";
 
 interface HeaderProps {}
 export const Header: React.FC<HeaderProps> = ({}) => {
+  const router = useRouter();
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   const [{ data, fetching }] = useMeQuery({
     pause: isServer(),
@@ -43,8 +49,9 @@ export const Header: React.FC<HeaderProps> = ({}) => {
             </NextLink>
             <Button
               color="red.500"
-              onClick={() => {
-                logout();
+              onClick={async () => {
+                await logout();
+                router.reload();
               }}
               isLoading={logoutFetching}
               ml={3}
