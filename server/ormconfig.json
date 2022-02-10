@@ -4,5 +4,7 @@
     "port": 5432,
     "username": "postgres",
     "password": "postgres",
-    "database": "dreddit"
+    "database": "dreddit",
+    "entities": ["dist/entities/*.js"],
+    "migrations": ["dist/migrations/*.js"]
 }

@@ -35,7 +35,6 @@ import { createUserLoader } from './utils/createUserLoader';
 const main = async () => {
     const conn = await createConnection({
         type: 'postgres',
-
         logging: true,
         url: process.env.DATABASE_URL,
         migrations: [path.join(__dirname, './migrations/*')],
@@ -69,7 +68,7 @@ const main = async () => {
                 httpOnly: true,
                 sameSite: 'lax', // csrf
                 secure: __prod__, // cookie only works in https
-                domain: __prod__ ? '.dreddit.co.uk' : undefined
+                domain: __prod__ ? '.dreddit.uk' : undefined
             },
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET as string,
